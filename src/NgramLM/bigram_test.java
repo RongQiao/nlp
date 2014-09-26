@@ -10,14 +10,12 @@ public class bigram_test {
 		}
 		else {
 			TrainingResultData trd = new TrainingResultData();
-			trd.learnFromResultFile("LM.txt");
+			trd.learnFromResultFile(args[3]);
 			
-			String fileNameTest = "hw2_test.txt";
+			String fileNameTest = args[1];
 			DataFile df = new DataFile(fileNameTest);
 			List<String> words = df.getWords();
 			List<String> pairs = df.getPairs();
-			//List<String> sentences = df.getSentences();
-			//TestData td = new TestData(sentences);
 			TestData td = new TestData(pairs, words.size());
 			double ppl = td.test(trd);
 			System.out.println(ppl);
