@@ -90,4 +90,28 @@ public class DataMap {
 		sd.setSumPairCount(sumCnt);
 	}
 
+	public boolean getSmoothSign(String key) {
+		StatisticData sd = map.get(key);
+		return sd.isNeedSmooth();
+	}
+
+	public boolean getGoodturningSign(String key) {
+		StatisticData sd = map.get(key);
+		return sd.isGoodTurning();
+	}
+
+	public void createKey(String key, StatisticData sd) {
+		map.put(key, sd);
+	}
+
+	public double getLogAlpha(String key) {
+		StatisticData sd = map.get(key);
+		return sd.getLogAlpha();
+	}
+	
+	public double getLogProbability(String key) {
+		StatisticData sd = map.get(key);
+		return sd.getLogProbability();
+	}
+
 }

@@ -48,4 +48,10 @@ public class DataFile extends WordBasedFile{
 		return pairs;
 	}
 
+	public List<String> getSentences() {
+		//List<String> sents = new ArrayList<String>();
+		List<String> lines = this.readLines();
+		return lines;
+	}
+
 }

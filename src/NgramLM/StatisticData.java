@@ -11,14 +11,21 @@ public class StatisticData {
 	private double alpha;
 	private double probGoodTurning;	
 	private double backOffProb;
+	private boolean signSmooth;
+	private boolean signGoodturning;
+	private double logProbability;
+	private double logAlpha;
 	
 	public StatisticData() {
 		count = 0;
 		followCount = 0;
 		probability = 0;
 		sumPairProb = 0;
+		SumPairCount = 0;
 		backoffPml = 0;
 		alpha = 0;
+		signSmooth = false;
+		signGoodturning = false;
 	}
 
 	public int getCount() {
@@ -72,6 +79,10 @@ public class StatisticData {
 	public void setProbGoodTurning(double prob) {
 		this.probGoodTurning = prob;
 	}
+	
+	public double getProbGoodTurning() {
+		return this.probGoodTurning;
+	}
 
 	public double getBackOffProb() {
 		return backOffProb;
@@ -89,4 +100,35 @@ public class StatisticData {
 		SumPairCount = sumPairCount;
 	}
 
+	public void setSmoothSign() {
+		this.signSmooth = true;
+	}
+
+	public boolean isNeedSmooth() {
+		return this.signSmooth;
+	}
+
+	public void setGoodturningSign() {
+		this.signGoodturning = true;
+	}
+	
+	public boolean isGoodTurning() {
+		return this.signGoodturning;
+	}
+
+	public double getLogProbability() {
+		return logProbability;
+	}
+
+	public void setLogProbability(double logProbability) {
+		this.logProbability = logProbability;
+	}
+
+	public double getLogAlpha() {
+		return logAlpha;
+	}
+
+	public void setLogAlpha(double logAlpha) {
+		this.logAlpha = logAlpha;
+	}
 }

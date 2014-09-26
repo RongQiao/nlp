@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.List;
 
 public class Sentence {
-	private static final char STRING_END = '\0';
-	private byte content[];
-	private char seperator;
+	protected static final char STRING_END = '\0';
+	protected byte content[];
+	protected char seperator;
 
 	public Sentence(String line) {
 		content = line.getBytes();

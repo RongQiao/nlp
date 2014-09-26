@@ -11,7 +11,7 @@ import java.util.TreeMap;
 import basic.ValueComparator;
 import basicFiles.TextFile;
 
-public class TrainingData {
+public class TrainingData extends TrainingResultData{
 	private final String OUT_FILENAME_UNIG = "LM.txt";
 	private final double EPSILON = 1e-13;
 	private DataMap uniMap;
@@ -21,6 +21,7 @@ public class TrainingData {
 	private double estGoodTurnig;
 	private int N2;
 	private int N1;
+	private final double SMOOTH_DISCOUNT_NUM = 0.99;
 
 	public static void main(String[] args) {
 		String fileName = "hw2_train.txt";
@@ -105,7 +106,7 @@ public class TrainingData {
 		calculatePairCount();
 		calculateBigramProb();		
 		calculateUnigramAlpha();
-		calculateBigramBackOffProb();
+		//calculateBigramBackOffProb();
 		outputLanguageModel();
 	}
 
@@ -113,10 +114,11 @@ public class TrainingData {
 		for (Map.Entry<String, StatisticData> entry: this.biMap.entrySet()) {
 			String pair = entry.getKey();
 			StatisticData sd = entry.getValue();
-			String s1 = getS1(pair);
-			double alpha = uniMap.getAlpha(s1);
-			String s2 = getS2(pair);
-			double Pml = uniMap.getProbability(s2);
+			
+			String h = getS1(pair);
+			double alpha = uniMap.getAlpha(h);
+			String w = getS2(pair);
+			double Pml = uniMap.getProbability(w);
 			double Pbo = alpha * Pml;
 			sd.setBackOffProb(Pbo);
 		}
@@ -136,12 +138,29 @@ public class TrainingData {
 		outFile.write(lmContent);
 	}
 
-	private double log2(double num) {
+	public double log2(double num) {
 		double ret = (double) (Math.log(num)/Math.log(2)+EPSILON);
 		return ret;
 	}
 	
 	private List<String> arrangeOutputContent() {
+//		SDataComparator bvc = new SDataComparator(uniMap.getMap());
+//		TreeMap<String, StatisticData> sorted_map = new TreeMap<String, StatisticData>(bvc);
+//		List<String> content = new ArrayList<String>();
+//		if (uniMap != null) {
+//			sorted_map.putAll(uniMap.getMap());
+//					
+//			content.add("unigrams:");
+//			//test
+//			System.out.println("token:" + sorted_map.size());
+//			for (Map.Entry<String, StatisticData> entry: sorted_map.entrySet()) {
+//				String word = entry.getKey();
+//				StatisticData sd = entry.getValue();
+//				String line = word + " "
+//						+ sd.getCount();
+//				content.add(line);
+//			}			
+//		}
 		//sort map		
 		TreeMap<String, StatisticData> sorted_map = new TreeMap<String, StatisticData>();
 		List<String> content = new ArrayList<String>();
@@ -154,9 +173,11 @@ public class TrainingData {
 			for (Map.Entry<String, StatisticData> entry: sorted_map.entrySet()) {
 				String word = entry.getKey();
 				StatisticData sd = entry.getValue();
-				String line = log2(sd.getProbability()) + " " 
+				sd.setLogProbability(log2(sd.getProbability()));
+				sd.setLogAlpha(log2(sd.getAlpha()));
+				String line = sd.getLogProbability() + " "
 						+ word + " "
-						+ log2(sd.getAlpha());
+						+ sd.getLogAlpha();
 				content.add(line);
 			}			
 		}
@@ -168,7 +189,8 @@ public class TrainingData {
 			for (Map.Entry<String, StatisticData> entry: sorted_map.entrySet()) {
 				String word = entry.getKey();
 				StatisticData sd = entry.getValue();
-				String line = log2(sd.getBackOffProb()) + " " 
+				sd.setLogProbability(log2(sd.getProbability()));
+				String line = sd.getLogProbability() + " "
 						+ word;
 				content.add(line);
 			}	
@@ -179,7 +201,7 @@ public class TrainingData {
 	public void calculateN1N2() {
 		this.N2 = 0;
 		this.N1 = 0;
-		for (Map.Entry<String, StatisticData> entry: this.uniMap.entrySet()) {
+		for (Map.Entry<String, StatisticData> entry: this.biMap.entrySet()) {
 			StatisticData sd = entry.getValue();
 			int cnt = sd.getCount();
 			if (cnt == 1) {
@@ -189,6 +211,8 @@ public class TrainingData {
 				this.N2++;
 			}
 		}
+		//test
+		System.out.println("N2:"+this.N2+",N1:"+N1);
 	}
 
 	//for n/m
@@ -205,18 +229,44 @@ public class TrainingData {
 		calculateSumPairProb();
 		for (Map.Entry<String, StatisticData> entry: uniMap.entrySet()) {
 			String word = entry.getKey();
-			StatisticData uniSD = entry.getValue();
+			StatisticData sd = entry.getValue();
 			
-			double pboPairs = uniSD.getSumPairCount()/(double)uniSD.getCount();
-			double Pml_Follows = uniSD.getBackoffPml();
+			double pboPairs = sd.getSumPairCount()/(double)sd.getCount();
+			double Pml_Follows = sd.getBackoffPml();
 			double probForAlpha = 1 - pboPairs;
 			//for the case no singleton pair, the pboPairs = 1, use a discount to smooth
-			if (Double.compare(probForAlpha, 0)==0) {				
-				probForAlpha = 1 - pboPairs * 0.99;
+			if (Double.compare(probForAlpha, 0)==0) {			
+				//use a smoothed probability
+				probForAlpha = 1 - pboPairs * SMOOTH_DISCOUNT_NUM ;
+				//mark the probability of pair begin with this word need be smoothed, do the smooth after this loop
+				sd.setSmoothSign();
 			}
 			double alpha = probForAlpha/(1-Pml_Follows);
-			uniSD.setAlpha(alpha);
+			sd.setAlpha(alpha);
+			//test
+			if (word.equalsIgnoreCase("$1011278")) {
+				System.out.println(word + ","
+						+ sd.getSumPairCount() + ","
+						+ sd.getCount() + ","
+						+ pboPairs + ","
+						+ probForAlpha
+						+ sd.isNeedSmooth()
+						+ sd.getAlpha() + ","
+						+ log2(sd.getAlpha()));
+			}
 		}		
+		updateBigramProb();
+	}
+	
+	private void discountSmooth(String h) {
+		for (Map.Entry<String, StatisticData> entry: biMap.entrySet()) {
+			String pair = entry.getKey();
+			String s1 = getS1(pair);
+			if (s1.equalsIgnoreCase(h)) {
+				StatisticData sd = entry.getValue();
+				sd.setProbability(sd.getProbability() * SMOOTH_DISCOUNT_NUM);
+			}
+		}
 	}
 
 	/*
@@ -229,7 +279,7 @@ public class TrainingData {
 			String pair = entry.getKey();
 			StatisticData sd = entry.getValue();
 			//1.
-			String s1 = getS1(pair);
+			String h = getS1(pair);
 			int pairCnt = sd.getCount();
 			if (pairCnt == 1) {
 				/*
@@ -237,29 +287,32 @@ public class TrainingData {
 				 * P(w|h) = 2*(N2/N1)/C(h)
 				 */
 				double gtCount = 2*((double)this.N2/(double)this.N1);
-				double prob = gtCount/(double)uniMap.getFollowCount(s1);
+				double prob = gtCount/(double)uniMap.getFollowCount(h);
 				sd.setProbGoodTurning(prob);
+				//consider the singleton pair is the only pair for h, we also need update the prob of this pair to Pgt
+				sd.setGoodturningSign();
 				//uniMap.updateSumPairProb(s1, prob);
-				uniMap.updateSumPairCount(s1, gtCount);
+				uniMap.updateSumPairCount(h, gtCount);
+				
 //				//test
-//				//System.out.println(pair);
-//				if (s1.indexOf("$1011278")>-1) {
-//					System.out.println(s1 + "," + uniMap.getFollowCount(s1) + "," + uniMap.getProbability("</s>") + prob);
-//				}
+				//System.out.println(pair);
+				if (h.indexOf("$1011278")>-1) {
+					System.out.println(h + "," + sd.getProbGoodTurning() + sd.isGoodTurning());
+				}
 			}
 			else {
 				//test
 				//System.out.println(pair);
-				if (s1.indexOf("$102")>-1) {
-					System.out.println(s1 + "," + pair + "," + uniMap.getFollowCount(s1) + ",");
+				if (h.indexOf("$102")>-1) {
+					System.out.println(h + "," + pair + "," + uniMap.getFollowCount(h) + ",");
 				}
-				//uniMap.updateSumPairProb(s1, sd.getProbability());
-				uniMap.updateSumPairCount(s1, pairCnt);
+				//uniMap.updateSumPairProb(h, sd.getProbability());
+				uniMap.updateSumPairCount(h, pairCnt);
 			}
 			//2.
 			String s2 = getS2(pair);
 			double siProb = uniMap.getProbability(s2);
-			uniMap.updateBackOffPml(s1, siProb);
+			uniMap.updateBackOffPml(h, siProb);
 		}
 	}
 
@@ -280,18 +333,52 @@ public class TrainingData {
 			
 			String s1 = getS1(pair);
 			double s1PairCnt = uniMap.getFollowCount(s1);
+			//test
+			
 			double probability = (double)sd.getCount() / s1PairCnt;// + EPSILON;
 			//test
-			//System.out.println(s1 + s1Cnt + probability);
+			if (pair.equalsIgnoreCase("$07 million")) {
+				System.out.println(pair + ","
+						+ s1PairCnt + ","
+						+ uniMap.getCount(s1) + ","
+						+ probability);
+			}
+			
 			sd.setProbability(probability);
 		}
 	}
 	
-	private String getS1(String pair) {
+	public void updateBigramProb() {
+		for (Map.Entry<String, StatisticData> entry: this.biMap.entrySet()) {
+			String pair = entry.getKey();
+			StatisticData sd = entry.getValue();
+			
+			String h = getS1(pair);
+			double probability = sd.getProbability();
+			if (uniMap.getSmoothSign(h))	//discount smooth is for non singleton pair, which is set in uniMap for the h
+			{
+				probability *= this.SMOOTH_DISCOUNT_NUM;
+				sd.setProbability(probability);
+			}	
+			if (sd.isGoodTurning()) {	//good turning is for a singleton pair, which is in biMap
+				sd.setProbability(sd.getProbGoodTurning());
+			}
+			//test
+			//test
+			if (pair.equalsIgnoreCase("enrico chiesa")) {
+				System.out.println(pair + ","
+						+ (uniMap.getSmoothSign(h)? "true" : "false")
+						+ (biMap.getGoodturningSign(pair)? "true" : "false")
+						+ sd.getProbability());
+			}
+		}
+	}
+	
+	public String getS1(String pair) {
 		return pair.substring(0, pair.indexOf(' '));
 	}
 	
-	private String getS2(String pair) {
+	public String getS2(String pair) {
 		int indexStart = pair.indexOf(' ');
 		indexStart += 1;
 		return pair.substring(indexStart, pair.length());
@@ -307,6 +394,10 @@ public class TrainingData {
 
 	public DataMap getUniMap() {
 		return this.uniMap;
+	}
+
+	public DataMap getBiMap() {
+		return this.biMap;
 	}
 
 	public double getAlpha(String key) {

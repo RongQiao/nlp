@@ -17,7 +17,7 @@ import NgramLM.TrainingData;
 public class CalculateTest {
 
 	@Test
-	public void calculateWholeFile() {
+	public void getTrainWords1() {
 		String fileName = "testOneSentence.txt";
 		DataFile df = new DataFile(fileName);
 		List<String> words = df.getWords();
@@ -154,5 +154,25 @@ public class CalculateTest {
 		td.training();
 		TextFile lmUnigram = new TextFile("LM.txt");
 		assertTrue(lmUnigram.exists());
+	}
+	
+	@Test
+	public void getTrainWords2() {
+		String fileName = "hw2_train.txt";
+		DataFile df = new DataFile(fileName);
+		List<String> words = df.getWords();
+		int cnt = words.size();
+		System.out.println("cnt=" + cnt);
+		assertTrue(cnt == 608615);
+	}
+	
+	@Test
+	public void getTrainPairs() {
+		String fileName = "hw2_train.txt";
+		DataFile df = new DataFile(fileName);
+		List<String> pairs = df.getPairs();
+		int cnt = pairs.size();
+		System.out.println("cnt=" + cnt);
+		//assertTrue(cnt == 608615);
 	}
 }
