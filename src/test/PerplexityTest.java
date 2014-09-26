@@ -45,9 +45,9 @@ public class PerplexityTest {
 	
 	@Test
 	public void testProbability() {
-		TrainingData trd = getTrainingData();
-		//TrainingResultData trd = new TrainingResultData();
-		//trd.learnFromResultFile("LM.txt");
+		//TrainingData trd = getTrainingData();
+		TrainingResultData trd = new TrainingResultData();
+		trd.learnFromResultFile("LM.txt");
 		
 		String fileNameTest = "hw2_test.txt";
 		DataFile df = new DataFile(fileNameTest);
@@ -56,7 +56,8 @@ public class PerplexityTest {
 		//List<String> sentences = df.getSentences();
 		//TestData td = new TestData(sentences);
 		TestData td = new TestData(pairs, words.size());
-		td.test(trd);
+		double ppl = td.test(trd);
+		System.out.println(ppl);
 	}
 
 }

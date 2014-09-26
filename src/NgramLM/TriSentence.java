@@ -12,7 +12,7 @@ public class TriSentence extends Sentence {
 			sOut[i] = s.substring(0, index);
 			s = s.substring(index+1, s.length());
 		}
-		sOut[2] = s.substring(1, s.length());
+		sOut[2] = s.substring(0, s.length());
 	}
 
 }

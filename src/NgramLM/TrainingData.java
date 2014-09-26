@@ -12,7 +12,7 @@ import basic.ValueComparator;
 import basicFiles.TextFile;
 
 public class TrainingData extends TrainingResultData{
-	private final String OUT_FILENAME_UNIG = "LM.txt";
+	public String OUT_FILENAME = "LM.txt";
 	private final double EPSILON = 1e-13;
 	private DataMap uniMap;
 	private DataMap biMap;
@@ -86,8 +86,8 @@ public class TrainingData extends TrainingResultData{
 
 	public void calculateUnigramProb() {
 		double DataCnt = this.words.size();
-		//test
-		System.out.println("total words:" + words.size());
+//		//test
+//		System.out.println("total words:" + words.size());
 		for (Map.Entry<String, StatisticData> entry: this.uniMap.entrySet()) {
 			String word = entry.getKey();
 			StatisticData sd = entry.getValue();
@@ -126,7 +126,7 @@ public class TrainingData extends TrainingResultData{
 
 	public void outputLanguageModel() {
 		List<String> lmContent = arrangeOutputContent();
-		TextFile outFile = new TextFile(this.OUT_FILENAME_UNIG);
+		TextFile outFile = new TextFile(this.OUT_FILENAME);
 		if (!outFile.exists()) {
 			try {
 				outFile.createNewFile();
@@ -168,8 +168,8 @@ public class TrainingData extends TrainingResultData{
 			sorted_map.putAll(uniMap.getMap());
 					
 			content.add("unigrams:");
-			//test
-			System.out.println("token:" + sorted_map.size());
+//			//test
+//			System.out.println("token:" + sorted_map.size());
 			for (Map.Entry<String, StatisticData> entry: sorted_map.entrySet()) {
 				String word = entry.getKey();
 				StatisticData sd = entry.getValue();
@@ -211,8 +211,8 @@ public class TrainingData extends TrainingResultData{
 				this.N2++;
 			}
 		}
-		//test
-		System.out.println("N2:"+this.N2+",N1:"+N1);
+//		//test
+//		System.out.println("N2:"+this.N2+",N1:"+N1);
 	}
 
 	//for n/m
@@ -243,17 +243,17 @@ public class TrainingData extends TrainingResultData{
 			}
 			double alpha = probForAlpha/(1-Pml_Follows);
 			sd.setAlpha(alpha);
-			//test
-			if (word.equalsIgnoreCase("$1011278")) {
-				System.out.println(word + ","
-						+ sd.getSumPairCount() + ","
-						+ sd.getCount() + ","
-						+ pboPairs + ","
-						+ probForAlpha
-						+ sd.isNeedSmooth()
-						+ sd.getAlpha() + ","
-						+ log2(sd.getAlpha()));
-			}
+//			//test
+//			if (word.equalsIgnoreCase("$1011278")) {
+//				System.out.println(word + ","
+//						+ sd.getSumPairCount() + ","
+//						+ sd.getCount() + ","
+//						+ pboPairs + ","
+//						+ probForAlpha
+//						+ sd.isNeedSmooth()
+//						+ sd.getAlpha() + ","
+//						+ log2(sd.getAlpha()));
+//			}
 		}		
 		updateBigramProb();
 	}
@@ -293,19 +293,8 @@ public class TrainingData extends TrainingResultData{
 				sd.setGoodturningSign();
 				//uniMap.updateSumPairProb(s1, prob);
 				uniMap.updateSumPairCount(h, gtCount);
-				
-//				//test
-				//System.out.println(pair);
-				if (h.indexOf("$1011278")>-1) {
-					System.out.println(h + "," + sd.getProbGoodTurning() + sd.isGoodTurning());
-				}
 			}
 			else {
-				//test
-				//System.out.println(pair);
-				if (h.indexOf("$102")>-1) {
-					System.out.println(h + "," + pair + "," + uniMap.getFollowCount(h) + ",");
-				}
 				//uniMap.updateSumPairProb(h, sd.getProbability());
 				uniMap.updateSumPairCount(h, pairCnt);
 			}
@@ -332,18 +321,8 @@ public class TrainingData extends TrainingResultData{
 			StatisticData sd = entry.getValue();
 			
 			String s1 = getS1(pair);
-			double s1PairCnt = uniMap.getFollowCount(s1);
-			//test
-			
-			double probability = (double)sd.getCount() / s1PairCnt;// + EPSILON;
-			//test
-			if (pair.equalsIgnoreCase("$07 million")) {
-				System.out.println(pair + ","
-						+ s1PairCnt + ","
-						+ uniMap.getCount(s1) + ","
-						+ probability);
-			}
-			
+			double s1PairCnt = uniMap.getFollowCount(s1);			
+			double probability = (double)sd.getCount() / s1PairCnt;// + EPSILON;			
 			sd.setProbability(probability);
 		}
 	}
@@ -362,14 +341,6 @@ public class TrainingData extends TrainingResultData{
 			}	
 			if (sd.isGoodTurning()) {	//good turning is for a singleton pair, which is in biMap
 				sd.setProbability(sd.getProbGoodTurning());
-			}
-			//test
-			//test
-			if (pair.equalsIgnoreCase("enrico chiesa")) {
-				System.out.println(pair + ","
-						+ (uniMap.getSmoothSign(h)? "true" : "false")
-						+ (biMap.getGoodturningSign(pair)? "true" : "false")
-						+ sd.getProbability());
 			}
 		}
 	}

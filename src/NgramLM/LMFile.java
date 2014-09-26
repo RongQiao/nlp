@@ -49,8 +49,7 @@ public class LMFile extends TextFile{
 		List<String> lines = this.readLines();	
 		boolean readUnigram = false;
 		boolean readBigram = false;
-		for (Iterator<String> iter = lines.iterator(); iter.hasNext(); ) {
-		    String line = iter.next();
+		for (String line: lines) {
 		    if (line.length()<1) {
 		    	continue;
 		    }
