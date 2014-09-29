@@ -29,7 +29,7 @@ public class TestData {
 //		System.out.println(logProb);		
 		logProb = logProb / this.N;
 		double perplexity = Math.pow(2, -logProb);
-		outputLanguageModel(trd);
+		//outputLanguageModel(trd);
 		return perplexity;
 	}
 	
