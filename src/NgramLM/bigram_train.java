@@ -16,6 +16,7 @@ public class bigram_train {
 			TrainingData td = new TrainingData(words, pairs);
 			td.OUT_FILENAME = args[3];
 			td.training();
+			System.out.println("training finished");
 		}
 	}
 
