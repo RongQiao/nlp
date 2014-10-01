@@ -1,10 +1,10 @@
 package NgramLM;
 
-public class StatisticData {
+import basic.BasicStatisticData;
 
-	private int count;
+public class StatisticData extends BasicStatisticData{
+
 	private int followCount;	//how many words followed this word
-	private double probability;
 	private double sumPairProb;	//the bigram prob of pair begin with this word
 	private double SumPairCount;
 	private double backoffPml;	//the unigram prob of all si for pair "s1 si"
@@ -17,31 +17,14 @@ public class StatisticData {
 	private double logAlpha;
 	
 	public StatisticData() {
-		count = 0;
+		super();
 		followCount = 0;
-		probability = 0;
 		sumPairProb = 0;
 		SumPairCount = 0;
 		backoffPml = 0;
 		alpha = 0;
 		signSmooth = false;
 		signGoodturning = false;
-	}
-
-	public int getCount() {
-		return count;
-	}
-
-	public void setCount(int count) {
-		this.count = count;
-	}
-
-	public double getProbability() {
-		return probability;
-	}
-
-	public void setProbability(double probability) {
-		this.probability = probability;
 	}
 
 	public double getAlpha() {

@@ -8,6 +8,8 @@ public class TPair {
 	public TPair(String s1, String s2) {
 		this.s1 = s1;
 		this.s2 = s2;
+		//set default separator as ' '
+		setSeparator(' ');
 	}
 	
 	public TPair(String str, char sep) {
@@ -36,6 +38,11 @@ public class TPair {
 
 	public void setSeparator(char separator) {
 		this.separator = separator;
+	}
+
+	public String getPair() {
+		String pr = getS1() + getSeparator() + getS2();
+		return pr;
 	}
 
 }

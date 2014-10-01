@@ -3,6 +3,7 @@ package hmm;
 import java.util.ArrayList;
 import java.util.List;
 
+import basic.ResultParser;
 import basic.TPair;
 import basicFiles.AbstractDataFile;
 import basicFiles.DataFile;
@@ -20,7 +21,7 @@ public class TagDataFile extends DataFile{
 	public TagDataFile(String pathname) {
 		super(pathname);
 		SentenceParser sp = new TagSentenceParser(); 
-		sp.setSeperator(' ');
+		sp.setSeperator(ResultParser.DEFAULT_SEPARATOR);
 		this.setStParser(sp);
 	}
 
@@ -29,6 +30,14 @@ public class TagDataFile extends DataFile{
 		TagSentenceParser sp = (TagSentenceParser) this.getStParser();
 		for (String line: lines) {
 			sp.putWordTagPairsToList(line, pairs);
+		}
+	}
+
+	public void getTagPairs(List<TPair> pairs) {
+		List<String> lines = this.readLines();
+		TagSentenceParser sp = (TagSentenceParser) this.getStParser();
+		for (String line: lines) {
+			sp.putTagPairsToList(line, pairs);
 		}
 	}
 

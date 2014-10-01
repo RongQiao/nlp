@@ -2,22 +2,28 @@ package test;
 
 import static org.junit.Assert.*;
 import hmm.TagDataFile;
+import hmm.TagTraining;
+import hmm.TagTrainingResult;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
+import NgramLM.TrainingResultData;
 import basic.TPair;
 import basicFiles.AbstractDataFile;
 import basicFiles.DataFile;
 import basicFiles.SentenceParser;
 import basicFiles.TagSentenceParser;
+import basicFiles.TextFile;
 
 public class HmmTrainTest {
 
 	@Test
-	public void getWords() {
+	public void getPairs1() {
 		String fileName = "testOneSentenceTag.txt";		
 		TagDataFile tdf = new TagDataFile(fileName);
 		List<TPair> pairs = new ArrayList<TPair>(); 
@@ -25,11 +31,50 @@ public class HmmTrainTest {
 		int cnt = pairs.size();
 		assertTrue(cnt == 32);
 		TPair pr = pairs.get(0);
-		for (int i = 0; i < cnt; i++) {
-			TPair p = pairs.get(i);
-			System.out.println(p.getS1() + "/" + p.getS2());
-		}
 		assertTrue(pr.getS1().equalsIgnoreCase("The"));
 		assertTrue(pr.getS2().equalsIgnoreCase("DT"));
+	}
+	
+	@Test
+	public void getPairs2() {
+		String fileName = "testOneSentenceTag.txt";		
+		TagDataFile tdf = new TagDataFile(fileName);
+		List<TPair> pairs = new ArrayList<TPair>(); 
+		tdf.getTagPairs(pairs);
+		int cnt = pairs.size();
+		assertTrue(cnt == 31);
+		TPair pr = pairs.get(0);
+		for (int i = 0; i < cnt; i++) {
+			TPair p = pairs.get(i);
+			System.out.println(p.getS1() + " " + p.getS2());
+		}
+		assertTrue(pr.getS1().equalsIgnoreCase("DT"));
+		assertTrue(pr.getS2().equalsIgnoreCase("NN"));
+	}	
+
+	@Test
+	public void getTrainInfo() {
+		String fileName = "testOneSentenceTag.txt";		
+		TagDataFile tdf = new TagDataFile(fileName);
+		TagTraining tt = new TagTraining(tdf);
+		tt.train();
+		TextFile word = new TextFile("hw3_word.txt");
+		assertTrue(word.exists());
+		TextFile wordTag = new TextFile("hw3_word_tag.txt");
+		assertTrue(wordTag.exists()); 
+		TextFile tagTag = new TextFile("hw3_tag_tag.txt");
+		assertTrue(tagTag.exists()); 
+	}
+	
+	@Test
+	public void getTrainResult() {
+		String fileName = "testOneSentenceTag.txt";		
+		TagDataFile tdf = new TagDataFile(fileName);
+		TagTraining tt = new TagTraining(tdf);
+		tt.train();
+		TagTrainingResult ttr = new TagTrainingResult();
+		ttr.learnTrainResultWord("hw3_word.txt");
+		ttr.learnTrainResultTransition("hw3_tag_tag.txt");
+		ttr.learnTrainResultObservation("hw3_word_tag.txt");
 	}
 }
