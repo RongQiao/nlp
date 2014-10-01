@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import basicFiles.SentenceParser;
 import basicFiles.TextFile;
 
 public class LMFile extends TextFile{
@@ -22,26 +23,26 @@ public class LMFile extends TextFile{
 	
 	private void getBigramResult(List<String> bigrams, DataMap biMap) {
 		for (String line: bigrams) {
-			TriSentence st = new TriSentence(line);
-			st.setSeperator(' ');
-			String words[] = new String[3];
-			st.putWords(words);
+			SentenceParser sp = new TriSentenceParser();
+			sp.setSeperator(' ');
+			List<String> words = new ArrayList<String>();
+			sp.putWordsToCollection(line, words);
 			StatisticData sd = new StatisticData();
-			sd.setLogProbability(Double.parseDouble(words[0]));
-			biMap.createKey(words[1] + " " + words[2], sd);
+			sd.setLogProbability(Double.parseDouble(words.get(0)));
+			biMap.createKey(words.get(1) + " " + words.get(2), sd);
 		}
 	}
 
 	private void getUnigramResult(List<String> unigrams, DataMap uniMap) {
 		for (String line: unigrams) {
-			TriSentence st = new TriSentence(line);
-			st.setSeperator(' ');
-			String words[] = new String[3];
-			st.putWords(words);
+			SentenceParser sp = new TriSentenceParser();
+			sp.setSeperator(' ');
+			List<String> words = new ArrayList<String>();
+			sp.putWordsToCollection(line, words);
 			StatisticData sd = new StatisticData();
-			sd.setLogProbability(Double.parseDouble(words[0]));
-			sd.setLogAlpha(Double.parseDouble(words[2]));
-			uniMap.createKey(words[1], sd);
+			sd.setLogProbability(Double.parseDouble(words.get(0)));
+			sd.setLogAlpha(Double.parseDouble(words.get(2)));
+			uniMap.createKey(words.get(1), sd);
 		}
 	}
 

@@ -2,6 +2,8 @@ package NgramLM;
 
 import java.util.List;
 
+import basicFiles.DataFile;
+
 public class bigram_test {
 
 	public static void main(String[] args) {
