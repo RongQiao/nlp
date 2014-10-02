@@ -29,6 +29,8 @@ public class TagDataFile extends DataFile{
 		List<String> lines = this.readLines();
 		TagSentenceParser sp = (TagSentenceParser) this.getStParser();
 		for (String line: lines) {
+			//add dummy start/end
+			line = "<s>/<s> " + line + " <.s>/<.s>";
 			sp.putWordTagPairsToList(line, pairs);
 		}
 	}
@@ -37,6 +39,8 @@ public class TagDataFile extends DataFile{
 		List<String> lines = this.readLines();
 		TagSentenceParser sp = (TagSentenceParser) this.getStParser();
 		for (String line: lines) {
+			//add dummy start/end
+			line = "<s>/<s> " + line + " <.s>/<.s>";
 			sp.putTagPairsToList(line, pairs);
 		}
 	}

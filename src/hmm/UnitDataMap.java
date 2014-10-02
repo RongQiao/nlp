@@ -39,24 +39,28 @@ public class UnitDataMap implements DataMapInterface{
 		return ret;
 	}
 
-	public void updateKey(String word, String tag) {
-		WordTagStatisticData sd = map.get(word);
-		//word count +1, no matter tag
+	public void updateKey(String key, String tag) {
+		WordTagStatisticData sd = map.get(key);
+		//key count +1, no matter tag
 		sd.setCount(sd.getCount()+1);	
 		//if it's a new tag, insert the new tag
 		List<String> tags =sd.getTags();
-		if (!tags.contains(tag)) {
-			tags.add(tag);	
+		if (tag != null) {
+			if (!tags.contains(tag)) {
+				tags.add(tag);	
+			}
 		}
-		map.put(word, sd);
+		map.put(key, sd);
 	}
 
-	public void createKey(String word, String tag) {
+	public void createKey(String key, String tag) {
 		WordTagStatisticData sd = new WordTagStatisticData();
 		sd.setCount(1);
-		List<String> tags =sd.getTags();
-		tags.add(tag);
-		map.put(word, sd);
+		if (tag != null) {
+			List<String> tags =sd.getTags();
+			tags.add(tag);
+		}
+		map.put(key, sd);
 	}
 
 	public void createKey(String key, WordTagStatisticData value) {

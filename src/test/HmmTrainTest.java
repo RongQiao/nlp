@@ -29,8 +29,8 @@ public class HmmTrainTest {
 		List<TPair> pairs = new ArrayList<TPair>(); 
 		tdf.getWordTagPairs(pairs);
 		int cnt = pairs.size();
-		assertTrue(cnt == 32);
-		TPair pr = pairs.get(0);
+		assertTrue(cnt == 34);
+		TPair pr = pairs.get(1);
 		assertTrue(pr.getS1().equalsIgnoreCase("The"));
 		assertTrue(pr.getS2().equalsIgnoreCase("DT"));
 	}
@@ -42,8 +42,8 @@ public class HmmTrainTest {
 		List<TPair> pairs = new ArrayList<TPair>(); 
 		tdf.getTagPairs(pairs);
 		int cnt = pairs.size();
-		assertTrue(cnt == 31);
-		TPair pr = pairs.get(0);
+		assertTrue(cnt == 33);
+		TPair pr = pairs.get(1);
 		for (int i = 0; i < cnt; i++) {
 			TPair p = pairs.get(i);
 			System.out.println(p.getS1() + " " + p.getS2());

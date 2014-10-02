@@ -65,6 +65,16 @@ public class TagTraining extends TagTrainingResult{
 				tagTagPairMap.createKey(pair);
 			}
 		}
+		//need add the last tag
+		TPair pr = pairs.get(pairs.size()-1);
+		//tag map
+		if (tagMap.containsKey(pr.getS2())) {
+			tagMap.updateKey(pr.getS2(), null);						
+		}
+		else {
+			String t = null;
+			tagMap.createKey(pr.getS2(), t);				
+		}
 	}
 
 	public void calculateProbObservation() {
@@ -76,13 +86,13 @@ public class TagTraining extends TagTrainingResult{
 			int base = wordMap.getCount(word);
 			int cnt = sd.getCount();
 			double prob = (double)cnt / (double)base;
-			//test
-			if (word.equalsIgnoreCase("it")) {
-				System.out.println(word + ","
-						+ base + ","
-						+ cnt + ",");
-			}
 			sd.setProbability(prob);
+			//test
+//			if (word.equalsIgnoreCase("it")) {
+//				System.out.println(word + ","
+//						+ base + ","
+//						+ cnt + ",");
+//			}
 		}
 	}
 
