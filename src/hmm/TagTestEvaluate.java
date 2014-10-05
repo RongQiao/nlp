@@ -46,40 +46,68 @@ public class TagTestEvaluate {
 		tgtSt += ' ';
 		refSt += ' ';
 		int tgtCnt = tgtSt.length();
-		int refCnt = refSt.length();
-		int len = Math.min(tgtCnt, refCnt);
-		int spaceIndex = 0;
+		int refCnt = refSt.length();		
+		int spaceTgt = 0, spaceRef = 0;
 		int i = 0; 	//i for tgtSt index
 		int j = 0;	//j for refSt index
-		while (i < len) {
+		while ((i < tgtCnt) && (j < refCnt)) {
 			if (tgtSt.charAt(i) == ' ') {
-				spaceIndex = i;	//keep the latest space index
+				spaceTgt = i;	//keep the latest space index
+			}
+			if (refSt.charAt(j) == ' ') {
+				spaceRef = j;
 			}
 			if (tgtSt.charAt(i) == refSt.charAt(j)) {
 				i++;
 				j++;
 			}
 			else {
-				TPair pr = getDiffPair(tgtSt, refSt, spaceIndex);
+				//s1[i] != s2[j], if one of them is Space, it means a new word, need go back to previous word
+				if (tgtSt.charAt(i) == ' ') {
+					spaceTgt = getBackSpaceIndex(tgtSt.getBytes(), i-1);
+				}
+				if (refSt.charAt(j) == ' ') {
+					spaceRef = getBackSpaceIndex(refSt.getBytes(), j-1);
+				}
+				TPair pr = getDiffPairFoward(tgtSt, refSt, spaceTgt, spaceRef);
 				String pairTgt = pr.getS1();
 				String pairRef = pr.getS2();
 				comparePair(pairTgt, pairRef);
 				//cotinue compare the rest part
-				i = spaceIndex + 1 + pairTgt.length();
-				j = spaceIndex + 1 + pairRef.length();
+				i = spaceTgt + 1 + pairTgt.length();
+				j = spaceRef + 1 + pairRef.length();
 			}
 		}
 	}
 
-	private TPair getDiffPair(String tgtSt, String refSt, int spaceIndex) {
-		String subTgt = tgtSt.substring(spaceIndex+1);
-		String subRef = refSt.substring(spaceIndex+1);
+	private int getBackSpaceIndex(byte[] bs, int currentSpace) {
+		int ret = 0;
+		for (int i = currentSpace; i >= 0; i--) {
+			if ((char)bs[i] == ' ') {
+				ret = i;
+				break;
+			}
+		}
+		return ret;
+	}
+
+	private TPair getDiffPairFoward(String tgtSt, String refSt, int spaceTgt, int spaceRef) {
+		TPair pr = new TPair("$$$", "$$$");
+		String subTgt = tgtSt.substring(spaceTgt+1);
+		String subRef = refSt.substring(spaceRef+1);
 		//compare the current different pair
 		int sI = subTgt.indexOf(' ');
+		if (sI > -1) {
 		String pairTgt = subTgt.substring(0, sI);
 		sI = subRef.indexOf(' ');
 		String pairRef = subRef.substring(0, sI);
-		return new TPair(pairTgt, pairRef);
+		pr = new TPair(pairTgt, pairRef);
+		}
+		//test
+		else {
+			System.out.println(tgtSt);
+		}
+		return pr;
 	}
 
 	private void comparePair(String pairTgt, String pairRef) {

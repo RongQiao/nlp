@@ -86,14 +86,10 @@ public class TagTest {
 		tagedFile.clear();
 		List<String> sentences = testFile.readLines();
 		for (String st: sentences) {
-			if (st.indexOf("Totally ") > -1) {
-				System.out.println(st);
-			}
 			//add dummy start/end
 			st = DummyItems.getDummyStart() + st + DummyItems.getDummyEnd();
+			//the out put is without dummy, it's removed in the process
 			String tagedSt = giveTagForSentence(st);
-			//get rid of dummy start/end word/tag pair
-			tagedSt = getRidOfDummyPair(tagedSt);
 			tagedFile.appendLine(tagedSt);
 		}
 	}
@@ -120,7 +116,8 @@ public class TagTest {
 		stParser.setSeperator(ResultParser.DEFAULT_SEPARATOR);
 		stParser.putWordsToCollection(st, words);
 		List<String> wordTags = calculateViterbiPath(words);
-		for (int i = 0; i < words.size(); i++) {
+		//get rid of dummy start/end by ignore the first/last word
+		for (int i = 1; i < words.size()-1; i++) {
 			String t = wordTags.get(i);
 			ret += t;
 			if (i < words.size()-1) {
@@ -208,10 +205,12 @@ public class TagTest {
 		List<String> tagedWords = new ArrayList<String>();
 		for (int t = 0; t < timeCnt; t++) {
 			String tw = words.get(t);
-			tw += "/";
+			tw += "/"; 
 			tw += tags.get(sTrack[t]);
 			tagedWords.add(tw);
 		}
+		//the last one should is dummy
+		//tagedWords.set(timeCnt, DummyItems.getDummyEndPair());
 		
 		return tagedWords;
 	}

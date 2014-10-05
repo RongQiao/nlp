@@ -15,8 +15,14 @@ public class TPair {
 	public TPair(String str, char sep) {
 		this.setSeparator(sep);
 		int index = str.indexOf(sep);
+		if (index > -1) {
 		s1 = str.substring(0, index);
 		s2 = str.substring(index+1, str.length());
+		}
+		//test
+		else {
+			System.out.println(str + "," + sep);
+		}
 	}
 
 	public String getS1() {
