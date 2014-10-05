@@ -64,9 +64,9 @@ public class TagTraining extends TagTrainingResult{
 			TPair pr = new TPair(en.getKey(), ResultParser.DEFAULT_SEPARATOR);
 			BasicStatisticData sd = en.getValue();
 			String word = pr.getS1();
-			int base = wordMap.getCount(word);
+			int base = tagMap.getCount(word);
 			int cnt = sd.getCount();
-			double prob = (double)cnt / (double)base;	//it's wrong, this is tag given word
+			double prob = (double)cnt / (double)base;
 			sd.setProbability(prob);
 			//test
 //			if (word.equalsIgnoreCase("it")) {

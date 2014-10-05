@@ -47,7 +47,7 @@ public class HmmViterbiTest {
 		TextFile testResult = new TextFile("taged.txt");
 		assertTrue(testResult.exists());
 		TagTestEvaluate tte = new TagTestEvaluate();
-		Map<String, TPair> dif = tte.evaluate("taged.txt", "taged_ref.txt");
+		Map<String, TPair> dif = tte.evaluate("taged.txt", "hw3_test_ref_00.txt");
 		if (dif.size() > 0) {
 			System.out.println(tte.getTotalAccurency());
 			Set<Entry<String, TPair>> entries = dif.entrySet();

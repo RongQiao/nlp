@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import NgramLM.RegularSentenceParser;
+import basic.BasicStatisticData;
 import basic.ResultParser;
 import basic.TPair;
 import basicFiles.TextFile;
@@ -15,6 +16,7 @@ import basicFiles.TextFile;
 public class TagTest {
 	private TagTrainingResult trainResult;
 	private RegularSentenceParser stParser;
+	private PairDataMap unseenWordTagMap;
 	
 	//save data
 	List<String> tags;
@@ -23,6 +25,7 @@ public class TagTest {
 	
 	public TagTest() {
 		stParser = new RegularSentenceParser();
+		unseenWordTagMap = new PairDataMap();
 		tags = null;
 	}
 
@@ -83,11 +86,14 @@ public class TagTest {
 		tagedFile.clear();
 		List<String> sentences = testFile.readLines();
 		for (String st: sentences) {
+			if (st.indexOf("Totally ") > -1) {
+				System.out.println(st);
+			}
 			//add dummy start/end
 			st = DummyItems.getDummyStart() + st + DummyItems.getDummyEnd();
 			String tagedSt = giveTagForSentence(st);
 			//get rid of dummy start/end word/tag pair
-			//tagedSt = getRidOfDummyPair(tagedSt);
+			tagedSt = getRidOfDummyPair(tagedSt);
 			tagedFile.appendLine(tagedSt);
 		}
 	}
@@ -98,7 +104,13 @@ public class TagTest {
 		int index = tagedSt.indexOf(start);
 		String ret = tagedSt.substring(index + start.length());
 		index = ret.indexOf(end);
-		ret = ret.substring(0, index);
+		if (index > 0) {
+			ret = ret.substring(0, index);
+		}
+		//test
+		else {
+			System.out.println(tagedSt);
+		}
 		return ret;
 	}
 
@@ -128,15 +140,22 @@ public class TagTest {
 		double viterbi[][] = new double[StateCnt][timeCnt];	//state-rows, time-columns
 		double a[][] = this.getTransitionTable();
 		int back_track[][] = new int[StateCnt][timeCnt];
-		//init viterbi, because the first word is <s>, give <s>/<s> value 1.0, else default 0
-		//for each states 
+		//init viterbi
+		//because the first word is <s>, give <s>/<s> value 1.0, else default 0
 		for (int s = 0; s < StateCnt; s++) {
 			if (tags.get(s).equalsIgnoreCase("<s>")) {
 				viterbi[s][0] = 1.0;
 				break;
 			}
 		}
-		//for each time step t from 0 to T
+//		//because the last word is <.s>, give <.s>/<.s> value 1.0, else default 0
+//		for (int s = 0; s < StateCnt; s++) {
+//			if (tags.get(s).equalsIgnoreCase("<.s>")) {
+//				viterbi[s][timeCnt-1] = 1.0;
+//				break;
+//			}
+//		}
+		//for each time step t from 1 to timeCnt-1, the first and the last have been initialized
 		for (int t = 1; t < timeCnt; t++) {
 			//for each states 
 			for (int si = 0; si < StateCnt; si++) {
@@ -208,23 +227,56 @@ public class TagTest {
 
 	private double getBsOt(String tag, String word) {
 		double prob = 0.0;
-		//check unseen word
+		//check if word is seen
 		if (!isSeenWord(word)) {
 			//unseen word
 			//1. try lower case first
 			word = word.toLowerCase();
 		}
 		if (isSeenWord(word)) {
-			//for seen word, use training result
-			String key = word + ResultParser.DEFAULT_SEPARATOR + tag;
-			prob =trainResult.wordTagPairMap.getProbability(key);
+			//for seen word, check if word/tag pair is seen
+			String pair = word + ResultParser.DEFAULT_SEPARATOR + tag;
+			if (isSeenPair(pair)) {
+				//use training result
+				prob =trainResult.wordTagPairMap.getProbability(pair);
+			}
+			else {
+				prob = getBsOtUnseenWordTagPair(tag, word);
+			}
+		}
+		else {
+			prob = getBsOtUnseenWordTagPair(tag, word);
+			
+		}
+		return prob;
+	}
+
+	private boolean isSeenPair(String pair) {	
+		return trainResult.wordTagPairMap.containsKey(pair);
+	}
+
+	private double getBsOtUnseenWordTagPair(String tag, String word) {
+		double prob = 0.0;
+		
+		String key = word + ResultParser.DEFAULT_SEPARATOR + tag;
+		if (unseenWordTagMap.containsKey(key)) {
+			//increase the count, keep the prob as the unit prob, so the returned prob = count * unit_prob
+			BasicStatisticData sd = unseenWordTagMap.get(key);
+			sd.setCount(sd.getCount()+1);
+			prob = sd.getProbability() * (double)sd.getCount();
 		}
 		else {
 			//2. use a strategy to give a probability
 			TagStrategy4UnseenWord stg = new TagStrategy4UnseenWord();
 			stg.setTrainResult(trainResult);
 			prob = stg.giveProbToWordTagPair(word, tag);
+			//save
+			BasicStatisticData sd = new BasicStatisticData();
+			sd.setCount(1);
+			sd.setProbability(prob);
+			unseenWordTagMap.createKey(key, sd);
 		}
+		
 		return prob;
 	}
 

@@ -49,26 +49,37 @@ public class TagTestEvaluate {
 		int refCnt = refSt.length();
 		int len = Math.min(tgtCnt, refCnt);
 		int spaceIndex = 0;
-		for (int i = 0; i < len; i++) {
+		int i = 0; 	//i for tgtSt index
+		int j = 0;	//j for refSt index
+		while (i < len) {
 			if (tgtSt.charAt(i) == ' ') {
 				spaceIndex = i;	//keep the latest space index
 			}
-			if (tgtSt.charAt(i) != refSt.charAt(i)) {
-				String subTgt = tgtSt.substring(spaceIndex+1);
-				String subRef = refSt.substring(spaceIndex+1);
-				//compare the current different pair
-				spaceIndex = subTgt.indexOf(' ');
-				String pairTgt = subTgt.substring(0, spaceIndex);
-				subTgt = subTgt.substring(spaceIndex+1);
-				spaceIndex = subRef.indexOf(' ');
-				String pairRef = subRef.substring(0, spaceIndex);
-				subRef = subRef.substring(spaceIndex+1);
+			if (tgtSt.charAt(i) == refSt.charAt(j)) {
+				i++;
+				j++;
+			}
+			else {
+				TPair pr = getDiffPair(tgtSt, refSt, spaceIndex);
+				String pairTgt = pr.getS1();
+				String pairRef = pr.getS2();
 				comparePair(pairTgt, pairRef);
 				//cotinue compare the rest part
-				compareSentence(subTgt, subRef);
-				break;
+				i = spaceIndex + 1 + pairTgt.length();
+				j = spaceIndex + 1 + pairRef.length();
 			}
 		}
+	}
+
+	private TPair getDiffPair(String tgtSt, String refSt, int spaceIndex) {
+		String subTgt = tgtSt.substring(spaceIndex+1);
+		String subRef = refSt.substring(spaceIndex+1);
+		//compare the current different pair
+		int sI = subTgt.indexOf(' ');
+		String pairTgt = subTgt.substring(0, sI);
+		sI = subRef.indexOf(' ');
+		String pairRef = subRef.substring(0, sI);
+		return new TPair(pairTgt, pairRef);
 	}
 
 	private void comparePair(String pairTgt, String pairRef) {
