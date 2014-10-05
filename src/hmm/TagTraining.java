@@ -12,27 +12,45 @@ import basic.TPair;
 import basicFiles.TextFile;
 
 public class TagTraining extends TagTrainingResult{
-	private TagDataFile trainFile;
+	private TagTrainFile trainFile;
 
-	public TagTraining(TagDataFile tdf) {
+	public TagTraining(TagTrainFile tdf) {
 		super();
 		this.trainFile = tdf;
 	}
 
 	public void train() {
+		trainWithoutOutput();
+		outputTrainResultTag("hw3_tag.txt");
+		outputTrainResultWord("hw3_word.txt");
+		outputWordTagData("hw3_word_tag.txt");
+		outputTagTagData("hw3_tag_tag.txt");
+		//test
+		outputResultNum();
+	}
+	
+	public void trainWithoutOutput() {
 		getTagsForWord();
 		calculateProbObservation();
 		getTagPairs();
 		calculateProbTransition();
-		outputTrainResultTag("hw3_tag.txt");
-		outputTrainResultWord("hw3_word.txt");
-		outPutWordTagData("hw3_word_tag.txt");
-		outPutTagTagData("hw3_tag_tag.txt");
 	}
 	
+	private void outputResultNum() {
+		int cnt = 0;
+		cnt = wordMap.entrySet().size();
+		System.out.println("token count: " + cnt);
+		cnt = tagMap.entrySet().size();
+		System.out.println("tag count: " + cnt);
+		cnt = wordTagPairMap.entrySet().size();
+		System.out.println("word/tag count: " + cnt);
+		cnt = tagTagPairMap.entrySet().size();
+		System.out.println("tag/tag count: " + cnt);
+	}
 
 	private void calculateProbTransition() {
 		Set<Entry<String, BasicStatisticData>> entries = tagTagPairMap.entrySet();
+		double p = 0;	//for test
 		for (Entry<String, BasicStatisticData> en: entries) {
 			TPair pr = new TPair(en.getKey(), ResultParser.DEFAULT_SEPARATOR);
 			BasicStatisticData sd = en.getValue();
@@ -40,7 +58,13 @@ public class TagTraining extends TagTrainingResult{
 			int cnt = sd.getCount();
 			double prob = (double)cnt / (double)base;
 			sd.setProbability(prob);
+			//test			
+//			if (pr.getS1().equalsIgnoreCase("<s>")) {
+//				p += prob;
+//			}
 		}
+		//test
+		//System.out.println("<s> tag/tag prob total: " + p);
 	}
 
 	private void getTagPairs() {
@@ -49,13 +73,13 @@ public class TagTraining extends TagTrainingResult{
 		for (TPair pr: pairs) {
 			String t1 = pr.getS1();
 			String t2 = pr.getS2();
-			//tag map
-			if (tagMap.containsKey(t1)) {
-				tagMap.updateKey(t1, t2);						
-			}
-			else {
-				tagMap.createKey(t1, t2);				
-			}
+//			//tag map
+//			if (tagMap.containsKey(t1)) {
+//				tagMap.updateKey(t1, t2);						
+//			}
+//			else {
+//				tagMap.createKey(t1, t2);				
+//			}
 			//tag tag pair map
 			String pair = pr.getPair();
 			if (tagTagPairMap.containsKey(pair)) {
@@ -65,16 +89,16 @@ public class TagTraining extends TagTrainingResult{
 				tagTagPairMap.createKey(pair);
 			}
 		}
-		//need add the last tag
-		TPair pr = pairs.get(pairs.size()-1);
-		//tag map
-		if (tagMap.containsKey(pr.getS2())) {
-			tagMap.updateKey(pr.getS2(), null);						
-		}
-		else {
-			String t = null;
-			tagMap.createKey(pr.getS2(), t);				
-		}
+//		//need add the last tag
+//		TPair pr = pairs.get(pairs.size()-1);
+//		//tag map
+//		if (tagMap.containsKey(pr.getS2())) {
+//			tagMap.updateKey(pr.getS2(), null);						
+//		}
+//		else {
+//			String t = null;
+//			tagMap.createKey(pr.getS2(), t);				
+//		}
 	}
 
 	public void calculateProbObservation() {
@@ -109,6 +133,14 @@ public class TagTraining extends TagTrainingResult{
 			else {
 				wordMap.createKey(word, tag);				
 			}
+			//tag map
+			if (tagMap.containsKey(tag)) {
+				tagMap.updateKey(tag, null);						
+			}
+			else {
+				String t = null;
+				tagMap.createKey(tag, t);				
+			}
 			//word tag pair map
 			String pair = word + " " + tag;
 			if (wordTagPairMap.containsKey(pair)) {
@@ -119,5 +151,6 @@ public class TagTraining extends TagTrainingResult{
 			}
 		}
 	}
+
 
 }

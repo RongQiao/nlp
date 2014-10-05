@@ -7,9 +7,7 @@ import NgramLM.RegularSentenceParser;
 
 /*
  * Each line in the data files contains a sentence 
- * (with the sentence starting <s> and endingsymbol </s>).
- * Use white spaces as separator to build a word-based language model.
- * Please treat sentence beginning and ending symbols as a "word".
+ * different data may have different sentence parser
  */
 public class DataFile extends SentenceBasedFile{
 

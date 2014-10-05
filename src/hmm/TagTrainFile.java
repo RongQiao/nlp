@@ -11,14 +11,14 @@ import basicFiles.SentenceParser;
 import basicFiles.TagSentenceParser;
 import basicFiles.TextFile;
 
-public class TagDataFile extends DataFile{
+public class TagTrainFile extends DataFile implements DummyInterface{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public TagDataFile(String pathname) {
+	public TagTrainFile(String pathname) {
 		super(pathname);
 		SentenceParser sp = new TagSentenceParser(); 
 		sp.setSeperator(ResultParser.DEFAULT_SEPARATOR);
@@ -30,7 +30,7 @@ public class TagDataFile extends DataFile{
 		TagSentenceParser sp = (TagSentenceParser) this.getStParser();
 		for (String line: lines) {
 			//add dummy start/end
-			line = "<s>/<s> " + line + " <.s>/<.s>";
+			line = getDummyStartPair() + line + getDummyEndPair();
 			sp.putWordTagPairsToList(line, pairs);
 		}
 	}
@@ -40,9 +40,24 @@ public class TagDataFile extends DataFile{
 		TagSentenceParser sp = (TagSentenceParser) this.getStParser();
 		for (String line: lines) {
 			//add dummy start/end
-			line = "<s>/<s> " + line + " <.s>/<.s>";
+			line = getDummyStartPair() + line + getDummyEndPair();
 			sp.putTagPairsToList(line, pairs);
 		}
 	}
 
+	public String getDummyStart() {
+		return DummyItems.getDummyStart();
+	}
+	
+	public String getDummyStartPair() {
+		return DummyItems.getDummyStartPair();
+	}
+	
+	public String getDummyEnd() {
+		return DummyItems.getDummyEnd();
+	}
+	
+	public String getDummyEndPair() {
+		return DummyItems.getDummyEndPair();
+	}
 }

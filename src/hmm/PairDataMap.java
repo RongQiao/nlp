@@ -67,6 +67,10 @@ public class PairDataMap implements DataMapInterface{
 		return map.entrySet();
 	}
 
+	public Map<String, BasicStatisticData> getMap() {		
+		return map;
+	}
+
 
 
 }

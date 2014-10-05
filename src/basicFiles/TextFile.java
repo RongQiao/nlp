@@ -35,49 +35,53 @@ public class TextFile extends File{
 //		return indexs;
 //	}
 //	
-//	public void write(String data) {
-//		writeFile(data, false);
-//	}
-//	
+	public void write(String data) {
+		writeFile(data, false);
+	}
+	
 //	public void append(String data) {
 //		writeFile(data, true);
 //	}
-//	
-//	private void writeFile(String data, boolean isAppend) {
-//		if (!exists()) {
-//			try {
-//				createNewFile();
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-//		BufferedWriter bfWriter = null;
-//		try {
-//			FileWriter flWriter = null;
-//			if (isAppend) {
-//				flWriter = new FileWriter(this, true);
-//			}
-//			else {
-//				flWriter = new FileWriter(this);
-//			}
-//			bfWriter = new BufferedWriter(flWriter);
-//			if (isAppend) {
-//				bfWriter.newLine();
-//			}
-//			bfWriter.write(data);
-//			bfWriter.close();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} finally {
-//			try {
-//				if (bfWriter != null) bfWriter.close();
-//			} catch (IOException ex) {
-//				ex.printStackTrace();
-//			}
-//		}
-//	}
+	
+	public void appendLine(String data) {
+		writeFile(data, true);
+	}
+	
+	private void writeFile(String data, boolean isAppend) {
+		if (!exists()) {
+			try {
+				createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		BufferedWriter bfWriter = null;
+		try {
+			FileWriter flWriter = null;
+			if (isAppend) {
+				flWriter = new FileWriter(this, true);
+			}
+			else {
+				flWriter = new FileWriter(this);
+			}
+			bfWriter = new BufferedWriter(flWriter);
+			if (isAppend) {
+				bfWriter.newLine();
+			}
+			bfWriter.write(data);
+			bfWriter.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				if (bfWriter != null) bfWriter.close();
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
 
 	public List<String> readLines() {
 		List<String>buf = new ArrayList<String>();
@@ -89,7 +93,9 @@ public class TextFile extends File{
 				bfReader = new BufferedReader(flReader);
 				String line = null;
 				while ((line = bfReader.readLine()) != null) {
-					buf.add(line);
+					if (line.length() > 0) {
+						buf.add(line);
+					}
 				}
 				bfReader.close();
 			} catch (IOException e) {
@@ -107,7 +113,7 @@ public class TextFile extends File{
 		return buf;
 	}
 
-	public void write(List<String> lmContent) {
+	public void write(List<String> content) {
 		if (!exists()) {
 			try {
 				createNewFile();
@@ -119,14 +125,11 @@ public class TextFile extends File{
 		BufferedWriter bfWriter = null;
 		try {
 			FileWriter flWriter = null;
-			{
-				flWriter = new FileWriter(this);
-			}
+			flWriter = new FileWriter(this, true);
 			bfWriter = new BufferedWriter(flWriter);
-
-			for (String line: lmContent) {
+			for (String data: content) {
 				bfWriter.newLine();
-				bfWriter.write(line);
+				bfWriter.write(data);
 			}
 			bfWriter.close();
 		} catch (IOException e) {
@@ -139,6 +142,10 @@ public class TextFile extends File{
 				ex.printStackTrace();
 			}
 		}
+	}
+
+	public void clear() {
+		write("");
 	}
 
 }

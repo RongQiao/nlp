@@ -1,7 +1,7 @@
 package test;
 
 import static org.junit.Assert.*;
-import hmm.TagDataFile;
+import hmm.TagTrainFile;
 import hmm.TagTraining;
 import hmm.TagTrainingResult;
 
@@ -25,7 +25,7 @@ public class HmmTrainTest {
 	@Test
 	public void getPairs1() {
 		String fileName = "testOneSentenceTag.txt";		
-		TagDataFile tdf = new TagDataFile(fileName);
+		TagTrainFile tdf = new TagTrainFile(fileName);
 		List<TPair> pairs = new ArrayList<TPair>(); 
 		tdf.getWordTagPairs(pairs);
 		int cnt = pairs.size();
@@ -38,7 +38,7 @@ public class HmmTrainTest {
 	@Test
 	public void getPairs2() {
 		String fileName = "testOneSentenceTag.txt";		
-		TagDataFile tdf = new TagDataFile(fileName);
+		TagTrainFile tdf = new TagTrainFile(fileName);
 		List<TPair> pairs = new ArrayList<TPair>(); 
 		tdf.getTagPairs(pairs);
 		int cnt = pairs.size();
@@ -55,7 +55,7 @@ public class HmmTrainTest {
 	@Test
 	public void getTrainInfo() {
 		String fileName = "testOneSentenceTag.txt";		
-		TagDataFile tdf = new TagDataFile(fileName);
+		TagTrainFile tdf = new TagTrainFile(fileName);
 		TagTraining tt = new TagTraining(tdf);
 		tt.train();
 		TextFile word = new TextFile("hw3_word.txt");
@@ -69,12 +69,26 @@ public class HmmTrainTest {
 	@Test
 	public void getTrainResult() {
 		String fileName = "testOneSentenceTag.txt";		
-		TagDataFile tdf = new TagDataFile(fileName);
+		TagTrainFile tdf = new TagTrainFile(fileName);
 		TagTraining tt = new TagTraining(tdf);
 		tt.train();
 		TagTrainingResult ttr = new TagTrainingResult();
 		ttr.learnTrainResultWord("hw3_word.txt");
 		ttr.learnTrainResultTransition("hw3_tag_tag.txt");
 		ttr.learnTrainResultObservation("hw3_word_tag.txt");
+	}
+	
+	@Test
+	public void getTrainInfo1() {
+		String fileName = "hw3_train.txt";		
+		TagTrainFile tdf = new TagTrainFile(fileName);
+		TagTraining tt = new TagTraining(tdf);
+		tt.train();
+		TextFile word = new TextFile("hw3_word.txt");
+		assertTrue(word.exists());
+		TextFile wordTag = new TextFile("hw3_word_tag.txt");
+		assertTrue(wordTag.exists()); 
+		TextFile tagTag = new TextFile("hw3_tag_tag.txt");
+		assertTrue(tagTag.exists()); 
 	}
 }

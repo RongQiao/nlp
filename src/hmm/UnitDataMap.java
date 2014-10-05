@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import NgramLM.StatisticData;
 import basic.DataMapInterface;
 
 public class UnitDataMap implements DataMapInterface{
@@ -75,6 +76,10 @@ public class UnitDataMap implements DataMapInterface{
 
 	public Set<Entry<String, WordTagStatisticData>> entrySet() {
 		return map.entrySet();
+	}
+
+	public Map<String, WordTagStatisticData> getMap() {
+		return map;
 	}
 
 
