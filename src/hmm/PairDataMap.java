@@ -10,9 +10,11 @@ import basic.DataMapInterface;
 
 public class PairDataMap implements DataMapInterface{
 	private Map<String, BasicStatisticData> map;
+	private int totalCount;
 	
 	public PairDataMap() {
 		map = new HashMap<String, BasicStatisticData>();
+		totalCount = 0;
 	}
 
 	@Override
@@ -48,6 +50,7 @@ public class PairDataMap implements DataMapInterface{
 	public void createKey(String pair) {
 		BasicStatisticData sd = new BasicStatisticData();
 		sd.setCount(1);
+		totalCount++;
 		map.put(pair, sd);
 	}
 
@@ -59,6 +62,7 @@ public class PairDataMap implements DataMapInterface{
 		BasicStatisticData bsd = map.get(pair);
 		int cnt = bsd.getCount();
 		cnt++;
+		totalCount++;
 		bsd.setCount(cnt);
 		map.put(pair, bsd);
 	}
@@ -69,6 +73,10 @@ public class PairDataMap implements DataMapInterface{
 
 	public Map<String, BasicStatisticData> getMap() {		
 		return map;
+	}
+
+	public int getCount() {
+		return totalCount;
 	}
 
 

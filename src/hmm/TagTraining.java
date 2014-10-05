@@ -31,24 +31,53 @@ public class TagTraining extends TagTrainingResult{
 	
 	public void trainWithoutOutput() {
 		getTagsForWord();
-		calculateProbObservation();
+		calculateProbWord();
+		calculateProbTag();
+		calculateProbWordGivenTag();
 		getTagPairs();
-		calculateProbTransition();
+		calculateProbTagGivenTag();
 	}
 	
-	private void outputResultNum() {
-		int cnt = 0;
-		cnt = wordMap.entrySet().size();
-		System.out.println("token count: " + cnt);
-		cnt = tagMap.entrySet().size();
-		System.out.println("tag count: " + cnt);
-		cnt = wordTagPairMap.entrySet().size();
-		System.out.println("word/tag count: " + cnt);
-		cnt = tagTagPairMap.entrySet().size();
-		System.out.println("tag/tag count: " + cnt);
+	private void calculateProbWord() {
+		calculateProbUnitMap(wordMap);
+	}
+	
+	private void calculateProbTag() {
+		calculateProbUnitMap(tagMap);
+	}
+	
+	private void calculateProbUnitMap(UnitDataMap map) {
+		Set<Entry<String, WordTagStatisticData>> entries = map.entrySet();
+		int base = map.getCount();	//the base is same for all tags
+		for (Entry<String, WordTagStatisticData> en: entries) {
+			int cnt = map.getCount(en.getKey());
+			double prob = (double)cnt / (double)base;
+			WordTagStatisticData sd = en.getValue();
+			sd.setProbability(prob);
+		}		
 	}
 
-	private void calculateProbTransition() {
+
+	public void calculateProbWordGivenTag() {
+		Set<Entry<String, BasicStatisticData>> entries = wordTagPairMap.entrySet();
+		for (Entry<String, BasicStatisticData> en: entries) {
+			TPair pr = new TPair(en.getKey(), ResultParser.DEFAULT_SEPARATOR);
+			BasicStatisticData sd = en.getValue();
+			String word = pr.getS1();
+			int base = wordMap.getCount(word);
+			int cnt = sd.getCount();
+			double prob = (double)cnt / (double)base;	//it's wrong, this is tag given word
+			sd.setProbability(prob);
+			//test
+//			if (word.equalsIgnoreCase("it")) {
+//				System.out.println(word + ","
+//						+ base + ","
+//						+ cnt + ",");
+//			}
+		}
+	}
+
+	private void calculateProbTagGivenTag() {
 		Set<Entry<String, BasicStatisticData>> entries = tagTagPairMap.entrySet();
 		double p = 0;	//for test
 		for (Entry<String, BasicStatisticData> en: entries) {
@@ -73,13 +102,11 @@ public class TagTraining extends TagTrainingResult{
 		for (TPair pr: pairs) {
 			String t1 = pr.getS1();
 			String t2 = pr.getS2();
-//			//tag map
-//			if (tagMap.containsKey(t1)) {
-//				tagMap.updateKey(t1, t2);						
-//			}
-//			else {
-//				tagMap.createKey(t1, t2);				
-//			}
+			//tag map, tag is put into map during getTagsForWord()
+			if (tagMap.containsKey(t1)) {
+				tagMap.updateFollowed(t1, t2);						
+			}
+
 			//tag tag pair map
 			String pair = pr.getPair();
 			if (tagTagPairMap.containsKey(pair)) {
@@ -101,24 +128,6 @@ public class TagTraining extends TagTrainingResult{
 //		}
 	}
 
-	public void calculateProbObservation() {
-		Set<Entry<String, BasicStatisticData>> entries = wordTagPairMap.entrySet();
-		for (Entry<String, BasicStatisticData> en: entries) {
-			TPair pr = new TPair(en.getKey(), ResultParser.DEFAULT_SEPARATOR);
-			BasicStatisticData sd = en.getValue();
-			String word = pr.getS1();
-			int base = wordMap.getCount(word);
-			int cnt = sd.getCount();
-			double prob = (double)cnt / (double)base;
-			sd.setProbability(prob);
-			//test
-//			if (word.equalsIgnoreCase("it")) {
-//				System.out.println(word + ","
-//						+ base + ","
-//						+ cnt + ",");
-//			}
-		}
-	}
 
 	private void getTagsForWord() {
 		List<TPair> pairs = new ArrayList<TPair>(); 
@@ -152,5 +161,20 @@ public class TagTraining extends TagTrainingResult{
 		}
 	}
 
+	private void outputResultNum() {
+		int cnt = 0;
+		
+		cnt = wordMap.getCount();
+		System.out.println("token count: " + wordMap.entrySet().size() + "," + cnt);
+		
+		cnt = tagMap.getCount();
+		System.out.println("tag count: " + tagMap.entrySet().size() + "," + cnt);
+		
+		cnt = wordTagPairMap.entrySet().size();
+		System.out.println("word/tag count: " + cnt + "," + wordTagPairMap.getCount());
+		
+		cnt = tagTagPairMap.entrySet().size();
+		System.out.println("tag/tag count: " + cnt + "," + tagTagPairMap.getCount());
+	}
 
 }

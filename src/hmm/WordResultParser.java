@@ -8,7 +8,10 @@ import java.util.Map.Entry;
 
 import basic.ResultParser;
 
-
+/*
+ * format:
+ * "key count probability PossibleTag" 
+ */
 public class WordResultParser extends ResultParser{
 
 	public static Entry<String, WordTagStatisticData> parse(String line) {
@@ -17,10 +20,11 @@ public class WordResultParser extends ResultParser{
 		char sep = getSeparator();
 		List<String> items = new ArrayList<String>();
 		putItemsToCollection(line, sep, items);
+		
 		String key = items.get(0);
 		sd.setCount(Integer.parseInt(items.get(1)));
-		items.remove(0);
-		items.remove(1);
+		sd.setProbability(Double.parseDouble(items.get(2)));
+		items = items.subList(3, items.size());
 		sd.setTags(items);
 		
 		Entry<String, WordTagStatisticData> en = 
@@ -34,6 +38,8 @@ public class WordResultParser extends ResultParser{
 		char sep = getSeparator(); 
 		line += sep;
 		line += sd.getCount();
+		line += sep;
+		line += sd.getProbability();
 		line += sep;
 		for (String tag: sd.getTags()) {
 			line += tag;

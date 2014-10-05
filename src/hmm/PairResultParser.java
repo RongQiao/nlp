@@ -8,10 +8,16 @@ import java.util.Map.Entry;
 import basic.BasicStatisticData;
 import basic.ResultParser;
 
+/*
+ * format:
+ * "Pair(space as separator) count probability"
+ */
 public class PairResultParser extends ResultParser{
 
 	public static String parse(String key, BasicStatisticData sd) {
 		String line = key;
+		line += getSeparator();
+		line += sd.getCount();
 		line += getSeparator();
 		line += sd.getProbability();
 		
@@ -23,7 +29,8 @@ public class PairResultParser extends ResultParser{
 		putItemsToCollection(line, getSeparator(), items);
 		String key = items.get(0) + getSeparator() + items.get(1);
 		BasicStatisticData sd = new BasicStatisticData();
-		sd.setProbability(Double.parseDouble(items.get(2)));
+		sd.setCount(Integer.parseInt(items.get(2)));
+		sd.setProbability(Double.parseDouble(items.get(3)));
 		Entry<String, BasicStatisticData> en = 
 				new AbstractMap.SimpleImmutableEntry<String, BasicStatisticData>(key, sd);
 		return en;

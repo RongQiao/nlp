@@ -32,6 +32,11 @@ public class TagTest {
 		TextFile testFile = new TextFile(fileName);
 		giveTagForFile(testFile);
 	}
+	
+
+	private void getAllTrainingResult() {
+		trainResult.learnAllTrainingResult();
+	}
 
 	private double[][] buildTransitionTable() {
 		List<String> tags = getTags();
@@ -136,11 +141,13 @@ public class TagTest {
 			//for each states 
 			for (int si = 0; si < StateCnt; si++) {
 				//for each transition s' from s specified by state-graph
-				for (int sj = 0; sj < StateCnt; sj++) {
+				for (int sj = 0; sj < StateCnt; sj++) {					
+					String word = words.get(t);
+					String tag = tags.get(sj);
 					//new value <- viterbi[s,t]*a[si,sj]*bsj(Ot)
 					double v = viterbi[si][t-1];
 					double aij = a[si][sj];
-					double bjt = getBsOt(tags.get(sj), words.get(t));
+					double bjt = getBsOt(tag, word);
 					double new_score = v * aij * bjt;
 					if (new_score >viterbi[sj][t]) {
 						viterbi[sj][t] = new_score;
@@ -200,14 +207,31 @@ public class TagTest {
 	}
 
 	private double getBsOt(String tag, String word) {
-		String key = word + ResultParser.DEFAULT_SEPARATOR + tag;
-		double ret = trainResult.wordTagPairMap.getProbability(key);
-		return ret;
+		double prob = 0.0;
+		//check unseen word
+		if (!isSeenWord(word)) {
+			//unseen word
+			//1. try lower case first
+			word = word.toLowerCase();
+		}
+		if (isSeenWord(word)) {
+			//for seen word, use training result
+			String key = word + ResultParser.DEFAULT_SEPARATOR + tag;
+			prob =trainResult.wordTagPairMap.getProbability(key);
+		}
+		else {
+			//2. use a strategy to give a probability
+			TagStrategy4UnseenWord stg = new TagStrategy4UnseenWord();
+			stg.setTrainResult(trainResult);
+			prob = stg.giveProbToWordTagPair(word, tag);
+		}
+		return prob;
 	}
 
-	private void getAllTrainingResult() {
-		trainResult.learnAllTrainingResult();
+	private boolean isSeenWord(String word) {		
+		return trainResult.wordMap.containsKey(word);
 	}
+
 
 
 

@@ -73,6 +73,7 @@ public class HmmTrainTest {
 		TagTraining tt = new TagTraining(tdf);
 		tt.train();
 		TagTrainingResult ttr = new TagTrainingResult();
+		ttr.learnTrainResultTag("hw3_tag.txt");
 		ttr.learnTrainResultWord("hw3_word.txt");
 		ttr.learnTrainResultTransition("hw3_tag_tag.txt");
 		ttr.learnTrainResultObservation("hw3_word_tag.txt");

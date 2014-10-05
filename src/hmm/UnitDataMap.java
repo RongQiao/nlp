@@ -12,9 +12,11 @@ import basic.DataMapInterface;
 
 public class UnitDataMap implements DataMapInterface{
 	private Map<String, WordTagStatisticData> map;
+	private int totalCount;
 	
 	public UnitDataMap() {
 		map = new HashMap<String, WordTagStatisticData>();
+		totalCount = 0;
 	}
 
 	@Override
@@ -40,10 +42,24 @@ public class UnitDataMap implements DataMapInterface{
 		return ret;
 	}
 
+	public void updateFollowed(String key, String tag) {
+		WordTagStatisticData sd = map.get(key);
+
+		//if it's a new tag, insert the new tag
+		List<String> tags =sd.getTags();
+		if (tag != null) {
+			if (!tags.contains(tag)) {
+				tags.add(tag);	
+			}
+		}
+		map.put(key, sd);
+	}
+	
 	public void updateKey(String key, String tag) {
 		WordTagStatisticData sd = map.get(key);
 		//key count +1, no matter tag
 		sd.setCount(sd.getCount()+1);	
+		totalCount++;
 		//if it's a new tag, insert the new tag
 		List<String> tags =sd.getTags();
 		if (tag != null) {
@@ -57,11 +73,12 @@ public class UnitDataMap implements DataMapInterface{
 	public void createKey(String key, String tag) {
 		WordTagStatisticData sd = new WordTagStatisticData();
 		sd.setCount(1);
+		totalCount++;
 		if (tag != null) {
 			List<String> tags =sd.getTags();
 			tags.add(tag);
 		}
-		map.put(key, sd);
+		map.put(key, sd);		
 	}
 
 	public void createKey(String key, WordTagStatisticData value) {
@@ -81,6 +98,12 @@ public class UnitDataMap implements DataMapInterface{
 	public Map<String, WordTagStatisticData> getMap() {
 		return map;
 	}
+
+	//get total count of all map's key
+	public int getCount() {
+		return this.totalCount;
+	}
+
 
 
 }
