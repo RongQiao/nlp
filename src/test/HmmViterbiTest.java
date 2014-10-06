@@ -2,6 +2,7 @@ package test;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -26,9 +27,10 @@ public class HmmViterbiTest {
 		TextFile testResult = new TextFile("taged.txt");
 		assertTrue(testResult.exists());
 		TagTestEvaluate tte = new TagTestEvaluate();
+		tte.setTrainingResult(ttr);
 		Map<String, TPair> dif = tte.evaluate("taged.txt", "taged_ref.txt");
+		tte.outputAccurency();
 		if (dif.size() > 0) {
-			System.out.println(tte.getTotalAccurency());
 			Set<Entry<String, TPair>> entries = dif.entrySet();
 			for (Entry<String, TPair> en: entries) {
 				TPair pr = en.getValue();
@@ -47,9 +49,10 @@ public class HmmViterbiTest {
 		TextFile testResult = new TextFile("taged.txt");
 		assertTrue(testResult.exists());
 		TagTestEvaluate tte = new TagTestEvaluate();
+		tte.setTrainingResult(ttr);
 		Map<String, TPair> dif = tte.evaluate("taged.txt", "hw3_test_ref_00.txt");
 		if (dif.size() > 0) {
-			System.out.println(tte.getTotalAccurency());
+			tte.outputAccurency();
 			Set<Entry<String, TPair>> entries = dif.entrySet();
 			for (Entry<String, TPair> en: entries) {
 				TPair pr = en.getValue();
@@ -61,16 +64,54 @@ public class HmmViterbiTest {
 
 	@Test
 	public void tagTestEvaluate() {
+		TagTrainingResult ttr = new TagTrainingResult();
+		ttr.learnAllTrainingResult();
 		TagTestEvaluate tte = new TagTestEvaluate();
+		tte.setTrainingResult(ttr);
 		Map<String, TPair> dif = tte.evaluate("taged.txt", "hw3_test_ref_00.txt");
 		if (dif.size() > 0) {
-			System.out.println(tte.getTotalAccurency());
+			tte.outputAccurency();
 			Set<Entry<String, TPair>> entries = dif.entrySet();
 			for (Entry<String, TPair> en: entries) {
+				String word = en.getKey();
 				TPair pr = en.getValue();
-				System.out.println(en.getKey() + "/" + pr.getPair());
+				System.out.println(word + "/" + pr.getPair() + 
+						(ttr.wordMap.containsKey(word) ? "" : " unseen"));
 			}
 		}
 		assertTrue(dif.size() == 0);
+	}
+	
+	@Test
+	public void tagTestEvaluate2() {
+		TagTrainingResult ttr = new TagTrainingResult();
+		ttr.learnAllTrainingResult();
+		TagTestEvaluate tte = new TagTestEvaluate();
+		tte.setTrainingResult(ttr);
+		TextFile t = new TextFile("taged.txt");
+		TextFile r = new TextFile("hw3_test_ref_00.txt");		
+		List<String> ts = t.readLines();
+		List<String> rs = r.readLines();
+		for (int i = 0; i < rs.size(); i++) {
+			TextFile tsf = new TextFile("ts.txt");
+			TextFile rsf = new TextFile("rs.txt");
+			tsf.write(ts.get(i));
+			rsf.write(rs.get(i));
+			Map<String, TPair> dif = tte.evaluate("ts.txt", "rs.txt");
+			if (dif.size() > 0) {
+				if (tte.getTotalAccurency()<0.9) {
+					System.out.println(ts.get(i));
+					System.out.println(rs.get(i));
+					tte.outputAccurency();
+				}
+				Set<Entry<String, TPair>> entries = dif.entrySet();
+				for (Entry<String, TPair> en: entries) {
+					String word = en.getKey();
+					TPair pr = en.getValue();
+					System.out.println(word + "/" + pr.getPair() + 
+							(ttr.wordMap.containsKey(word) ? "" : " unseen"));
+				}
+			}
+		}
 	}
 }

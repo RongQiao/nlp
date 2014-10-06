@@ -104,6 +104,19 @@ public class UnitDataMap implements DataMapInterface{
 		return this.totalCount;
 	}
 
+	public double getMinProbability() {
+		double prob = 0.0;
+		Set<Entry<String, WordTagStatisticData>> entries = map.entrySet();
+		for (Entry<String, WordTagStatisticData> en: entries) {
+			WordTagStatisticData sd = en.getValue();
+			if (sd.getCount() == 1) {
+				prob = sd.getProbability();
+				break;
+			}
+		}
+		return prob;
+	}
+
 
 
 }

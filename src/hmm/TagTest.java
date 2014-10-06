@@ -21,6 +21,7 @@ public class TagTest {
 	//save data
 	List<String> tags;
 	double transitionTable[][];
+	private TagStrategy4UnseenWord unseenStrategy;
 	
 	
 	public TagTest() {
@@ -50,11 +51,18 @@ public class TagTest {
 			for (int j = 0; j < StateCnt; j++) {
 				String Ti = tags.get(i);
 				String Tj = tags.get(j);
-				double proTi2Tj = trainResult.getTagPairProb(Tj, Ti);	
-				//test
-//				if (proTi2Tj > 0.0) {
-//					System.out.println(proTi2Tj + "," + Ti + "->" + Tj);
-//				}
+				double proTi2Tj = trainResult.getTagPairProb(Tj, Ti);					
+				if (!(proTi2Tj > 0.0)) {
+					//test
+					//System.out.println(proTi2Tj + "," + Ti + "->" + Tj);
+					if ((Tj.equalsIgnoreCase(DummyItems.getDummyStart()))
+							|| (Ti.equalsIgnoreCase(DummyItems.getDummyEnd()))) {
+						continue;	//keep X-><s> or <.s>->X as 0.0
+					}
+				}
+				//smooth
+				double a = 0.99;
+				proTi2Tj = a * proTi2Tj + (1 - a) * trainResult.tagMap.getProbability(Tj);
 				trsTable[i][j] = proTi2Tj;
 			}
 		}
@@ -134,8 +142,8 @@ public class TagTest {
 		List<String> tags = this.getTags();
 		int StateCnt = tags.size();
 		int timeCnt = words.size();
-		double viterbi[][] = new double[StateCnt][timeCnt];	//state-rows, time-columns
 		double a[][] = this.getTransitionTable();
+		double viterbi[][] = new double[StateCnt][timeCnt];	//state-rows, time-columns
 		int back_track[][] = new int[StateCnt][timeCnt];
 		//init viterbi
 		//because the first word is <s>, give <s>/<s> value 1.0, else default 0
@@ -145,31 +153,28 @@ public class TagTest {
 				break;
 			}
 		}
-//		//because the last word is <.s>, give <.s>/<.s> value 1.0, else default 0
-//		for (int s = 0; s < StateCnt; s++) {
-//			if (tags.get(s).equalsIgnoreCase("<.s>")) {
-//				viterbi[s][timeCnt-1] = 1.0;
-//				break;
-//			}
-//		}
-		//for each time step t from 1 to timeCnt-1, the first and the last have been initialized
+
+		//for each time step t from 1 to timeCnt, the first have been initialized
 		for (int t = 1; t < timeCnt; t++) {
+			String word = words.get(t);			
 			//for each states 
 			for (int si = 0; si < StateCnt; si++) {
 				//for each transition s' from s specified by state-graph
 				for (int sj = 0; sj < StateCnt; sj++) {					
-					String word = words.get(t);
 					String tag = tags.get(sj);
-					//new value <- viterbi[s,t]*a[si,sj]*bsj(Ot)
+					//new value <- viterbi[si,t-1]*a[si,sj]*bsj(Ot)
 					double v = viterbi[si][t-1];
 					double aij = a[si][sj];
 					double bjt = getBsOt(tag, word);
 					double new_score = v * aij * bjt;
-					if (new_score >viterbi[sj][t]) {
+					if (new_score >= viterbi[sj][t]) {
+						//test
+//						if (word.equalsIgnoreCase("1,111")) {
+//							System.out.println(tag + "," + new_score + "," + viterbi[sj][t]);
+//						}
 						viterbi[sj][t] = new_score;
 						back_track[sj][t] = si;	//for getting the path
-						//test
-						//System.out.println(words.get(t) + "/" + tags.get(sj) + ":" + new_score);
+
 					}
 				}
 			}
@@ -177,9 +182,7 @@ public class TagTest {
 		//get the path
 		List<String> tagedWords = getBackPath(tags, words, viterbi, back_track);
 		return tagedWords;
-	}
-	
-	
+	}	
 	
 	private List<String> getBackPath(List<String> tags, List<String> words,
 			double[][] viterbi, int[][] back_track) {
@@ -190,16 +193,16 @@ public class TagTest {
 		int sTrack[] = new int[timeCnt];
 		double vMax = 0;
 		for (int s = 0; s < stateCnt; s++) {
-			if (vMax < viterbi[s][lastT]) {
+			if (viterbi[s][lastT] > vMax) {
 				vMax = viterbi[s][lastT];
 				sTrack[lastT] = s;
 			}
 		}
-		int nextS = sTrack[lastT];
+		int preS = sTrack[lastT];
 		for (int t = timeCnt - 1; t > 1; t--) {
-			int s = back_track[nextS][t];
-			sTrack[t-1] = s; 
-			nextS = s;
+			int currentState = back_track[preS][t];
+			sTrack[t-1] = currentState; 
+			preS = currentState;
 		}
 		//out put tag
 		List<String> tagedWords = new ArrayList<String>();
@@ -209,21 +212,11 @@ public class TagTest {
 			tw += tags.get(sTrack[t]);
 			tagedWords.add(tw);
 		}
-		//the last one should is dummy
-		//tagedWords.set(timeCnt, DummyItems.getDummyEndPair());
 		
 		return tagedWords;
 	}
 
-	private void initViterbi(double[][] viterbi) {
-//		//for each time step t from 0 to T
-//		for (int t = 0; t < timeCnt-1; t++) {
-//			//for each states 
-//			for (int si = 0; si < StateCnt; si++) {
-//			}
-//		}
-	}
-
+	//p(w|t)
 	private double getBsOt(String tag, String word) {
 		double prob = 0.0;
 		//check if word is seen
@@ -244,9 +237,21 @@ public class TagTest {
 			}
 		}
 		else {
-			prob = getBsOtUnseenWordTagPair(tag, word);
-			
+			prob = getBsOtUnseenWord(tag, word);			
 		}
+		return prob;
+	}
+
+	/*
+	 * word is seen, but word/pair is unseen, give very small value, because seen pair should have more chance 
+	 * assume the min seen word/tag pair is 1, so get the half prob
+	 */
+	private double getBsOtUnseenWordTagPair(String tag, String word) {
+		double prob = 0.0;
+		
+		//prob = trainResult.wordTagPairMap.getMinProbability();
+		//prob /= 2;
+		
 		return prob;
 	}
 
@@ -254,20 +259,20 @@ public class TagTest {
 		return trainResult.wordTagPairMap.containsKey(pair);
 	}
 
-	private double getBsOtUnseenWordTagPair(String tag, String word) {
+	private double getBsOtUnseenWord(String tag, String word) {
 		double prob = 0.0;
 		
 		String key = word + ResultParser.DEFAULT_SEPARATOR + tag;
 		if (unseenWordTagMap.containsKey(key)) {
 			//increase the count, keep the prob as the unit prob, so the returned prob = count * unit_prob
 			BasicStatisticData sd = unseenWordTagMap.get(key);
-			sd.setCount(sd.getCount()+1);
-			prob = sd.getProbability() * (double)sd.getCount();
+			//sd.setCount(sd.getCount()+1);
+			//prob = sd.getProbability() * (double)sd.getCount();
+			prob = sd.getProbability();
 		}
 		else {
-			//2. use a strategy to give a probability
-			TagStrategy4UnseenWord stg = new TagStrategy4UnseenWord();
-			stg.setTrainResult(trainResult);
+			//2. use a strategy to give a probability			
+			TagStrategy4UnseenWord stg = getUnseenStrategy();
 			prob = stg.giveProbToWordTagPair(word, tag);
 			//save
 			BasicStatisticData sd = new BasicStatisticData();
@@ -277,6 +282,14 @@ public class TagTest {
 		}
 		
 		return prob;
+	}
+
+	private TagStrategy4UnseenWord getUnseenStrategy() {
+		if (unseenStrategy == null) {
+			unseenStrategy = new TagStrategy4UnseenWord();
+			unseenStrategy.setTrainResult(trainResult);
+		}
+		return unseenStrategy;
 	}
 
 	private boolean isSeenWord(String word) {		

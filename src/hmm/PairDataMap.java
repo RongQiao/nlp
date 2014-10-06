@@ -11,10 +11,12 @@ import basic.DataMapInterface;
 public class PairDataMap implements DataMapInterface{
 	private Map<String, BasicStatisticData> map;
 	private int totalCount;
+	private double minProbability;
 	
 	public PairDataMap() {
 		map = new HashMap<String, BasicStatisticData>();
 		totalCount = 0;
+		minProbability = 0.0;
 	}
 
 	@Override
@@ -81,6 +83,20 @@ public class PairDataMap implements DataMapInterface{
 
 	public BasicStatisticData get(String key) {
 		return map.get(key);
+	}
+
+	public double getMinProbability() {
+		if (Double.compare(minProbability, Double.MIN_NORMAL) < 0) {
+			Set<Entry<String, BasicStatisticData>> entries = map.entrySet();
+			for (Entry<String, BasicStatisticData> en: entries) {
+				BasicStatisticData sd = en.getValue();
+				if (sd.getCount() == 1) {
+					minProbability = sd.getProbability();
+					break;
+				}
+			}
+		}
+		return minProbability;
 	}
 
 

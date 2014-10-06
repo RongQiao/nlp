@@ -63,8 +63,10 @@ public class TagTraining extends TagTrainingResult{
 		for (Entry<String, BasicStatisticData> en: entries) {
 			TPair pr = new TPair(en.getKey(), ResultParser.DEFAULT_SEPARATOR);
 			BasicStatisticData sd = en.getValue();
-			String word = pr.getS1();
-			int base = tagMap.getCount(word);
+			String tag = pr.getS2();
+			int base = tagMap.getCount(tag);
+//			String word = pr.getS1();
+//			int base = wordMap.getCount(word);
 			int cnt = sd.getCount();
 			double prob = (double)cnt / (double)base;
 			sd.setProbability(prob);
