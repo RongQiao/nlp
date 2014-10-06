@@ -29,7 +29,7 @@ public class HmmViterbiTest {
 		TagTestEvaluate tte = new TagTestEvaluate();
 		tte.setTrainingResult(ttr);
 		Map<String, TPair> dif = tte.evaluate("taged.txt", "taged_ref.txt");
-		tte.outputAccurency();
+		tte.outputAccuracy();
 		if (dif.size() > 0) {
 			Set<Entry<String, TPair>> entries = dif.entrySet();
 			for (Entry<String, TPair> en: entries) {
@@ -52,7 +52,7 @@ public class HmmViterbiTest {
 		tte.setTrainingResult(ttr);
 		Map<String, TPair> dif = tte.evaluate("taged.txt", "hw3_test_ref_00.txt");
 		if (dif.size() > 0) {
-			tte.outputAccurency();
+			tte.outputAccuracy();
 			Set<Entry<String, TPair>> entries = dif.entrySet();
 			for (Entry<String, TPair> en: entries) {
 				TPair pr = en.getValue();
@@ -70,7 +70,7 @@ public class HmmViterbiTest {
 		tte.setTrainingResult(ttr);
 		Map<String, TPair> dif = tte.evaluate("taged.txt", "hw3_test_ref_00.txt");
 		if (dif.size() > 0) {
-			tte.outputAccurency();
+			tte.outputAccuracy();
 			Set<Entry<String, TPair>> entries = dif.entrySet();
 			for (Entry<String, TPair> en: entries) {
 				String word = en.getKey();
@@ -99,10 +99,10 @@ public class HmmViterbiTest {
 			rsf.write(rs.get(i));
 			Map<String, TPair> dif = tte.evaluate("ts.txt", "rs.txt");
 			if (dif.size() > 0) {
-				if (tte.getTotalAccurency()<0.9) {
+				if (tte.getTotalAccuracy()<0.9) {
 					System.out.println(ts.get(i));
 					System.out.println(rs.get(i));
-					tte.outputAccurency();
+					tte.outputAccuracy();
 				}
 				Set<Entry<String, TPair>> entries = dif.entrySet();
 				for (Entry<String, TPair> en: entries) {

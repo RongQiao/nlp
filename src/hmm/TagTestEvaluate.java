@@ -11,11 +11,11 @@ import basicFiles.TextFile;
 
 public class TagTestEvaluate {
 	private Map<String, TPair> differenceMap;	//for same word, different tag
-	private double totalAccurency;
-	private double knownAccurency;
+	private double totalAccuracy;
+	private double knownAccuracy;
 	private int knownWordCnt_Dif;
 	private int knownWordCnt;
-	private double unknownAccurency;
+	private double unknownAccuracy;
 	private TagTrainingResult trainingResult;
 	
 	public TagTestEvaluate() {
@@ -29,24 +29,24 @@ public class TagTestEvaluate {
 		List<String> target = targetFile.readLines();
 		List<String> ref = refFile.readLines();
 		compare(target, ref);	//put difference into differenceMap					
-		calculateAccurency(refFileName);
+		calculateAccuracy(refFileName);
 		return getDifferenceMap();
 	}
 	
-	private void calculateAccurency(String refFileName) {
+	private void calculateAccuracy(String refFileName) {
 		TagTestRefFile refFile = new TagTestRefFile(refFileName);
 		TagTraining refResult = new TagTraining(refFile);
 		refResult.trainWithoutOutput();
-		totalAccurency = calculateTotalAccurency(refResult);
-		knownAccurency = calculateKnownAccurency(refResult);
-		unknownAccurency = calculateUnknownAccurency(refResult);
+		totalAccuracy = calculateTotalAccuracy(refResult);
+		knownAccuracy = calculateKnownAccuracy(refResult);
+		unknownAccuracy = calculateUnknownAccuracy(refResult);
 	}
 
 	/*
 	 * different word/tag which the word is unknown in training result
 	 * compare to all word/tag from test which are known in traing result 
 	 */
-	private double calculateUnknownAccurency(TagTraining refResult) {
+	private double calculateUnknownAccuracy(TagTraining refResult) {
 		int unknownWordCnt_Dif = differenceMap.size() - knownWordCnt_Dif;
 		int unknownWordCnt = refResult.wordMap.entrySet().size() - knownWordCnt;
 		double prob = (double)unknownWordCnt_Dif / (double)unknownWordCnt;
@@ -57,7 +57,7 @@ public class TagTestEvaluate {
 	 * different word/tag which the word is known in training result
 	 * compare to all word/tag from test which are known in traing result 
 	 */
-	private double calculateKnownAccurency(TagTraining refResult) {
+	private double calculateKnownAccuracy(TagTraining refResult) {
 		Set<Entry<String, TPair>> entries = differenceMap.entrySet();
 		knownWordCnt_Dif = 0;
 		for (Entry<String, TPair> en: entries) {
@@ -80,7 +80,7 @@ public class TagTestEvaluate {
 	}
 
 	//different word/tag compare to total word/tag
-	private double calculateTotalAccurency(TagTraining refResult) {
+	private double calculateTotalAccuracy(TagTraining refResult) {
 		double acr = 0.0;
 		int wordTagPairCnt = refResult.wordTagPairMap.entrySet().size();
 		int diffCnt = differenceMap.size();
@@ -174,30 +174,30 @@ public class TagTestEvaluate {
 		}
 	}
 
-	public double getTotalAccurency() {
-		return totalAccurency;
+	public double getTotalAccuracy() {
+		return totalAccuracy;
 	}
 
 	public Map<String, TPair> getDifferenceMap() {
 		return differenceMap;
 	}
 
-	public double getUnknownAccurency() {
-		return unknownAccurency;
+	public double getUnknownAccuracy() {
+		return unknownAccuracy;
 	}
 
-	public double getKnownAccurency() {
-		return knownAccurency;
+	public double getKnownAccuracy() {
+		return knownAccuracy;
 	}
 
 	public void setTrainingResult(TagTrainingResult ttr) {
 		trainingResult = ttr;
 	}
 
-	public void outputAccurency() {
-		System.out.println("total: " + getTotalAccurency());
-		System.out.println("known: " + getKnownAccurency());
-		System.out.println("unkonwn: " + getUnknownAccurency());
+	public void outputAccuracy() {
+		System.out.println("total: " + getTotalAccuracy());
+		System.out.println("known: " + getKnownAccuracy());
+		System.out.println("unkonwn: " + getUnknownAccuracy());
 	}
 
 

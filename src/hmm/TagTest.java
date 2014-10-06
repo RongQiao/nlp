@@ -152,7 +152,7 @@ public class TagTest {
 				viterbi[s][0] = 1.0;
 				break;
 			}
-		}
+		}		
 
 		//for each time step t from 1 to timeCnt, the first have been initialized
 		for (int t = 1; t < timeCnt; t++) {
