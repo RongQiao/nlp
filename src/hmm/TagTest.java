@@ -32,16 +32,10 @@ public class TagTest {
 
 	public void test(TagTrainingResult ttr, String fileName) {
 		trainResult = ttr;
-		getAllTrainingResult();
 		TextFile testFile = new TextFile(fileName);
 		giveTagForFile(testFile);
 	}
 	
-
-	private void getAllTrainingResult() {
-		trainResult.learnAllTrainingResult();
-	}
-
 	private double[][] buildTransitionTable() {
 		List<String> tags = getTags();
 		int StateCnt = tags.size();
@@ -128,7 +122,7 @@ public class TagTest {
 		for (int i = 1; i < words.size()-1; i++) {
 			String t = wordTags.get(i);
 			ret += t;
-			if (i < words.size()-1) {
+			if (i < words.size()-2) {
 				ret += ResultParser.DEFAULT_SEPARATOR;
 			}
 		}
@@ -167,7 +161,7 @@ public class TagTest {
 					double aij = a[si][sj];
 					double bjt = getBsOt(tag, word);
 					double new_score = v * aij * bjt;
-					if (new_score >= viterbi[sj][t]) {
+					if (new_score > viterbi[sj][t]) {
 						//test
 //						if (word.equalsIgnoreCase("1,111")) {
 //							System.out.println(tag + "," + new_score + "," + viterbi[sj][t]);

@@ -6,24 +6,29 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
+import basic.BasicStatisticData;
 import basic.TPair;
 import basicFiles.TextFile;
 
 public class TagTestEvaluate {
-	private Map<String, TPair> differenceMap;	//for same word, different tag
+	//private Map<String, TPair> differenceMap;	//for same word, different tag
+	private PairDataMap differenceMap;
 	private double totalAccuracy;
 	private double knownAccuracy;
 	private int knownWordCnt_Dif;
+	private int unknownWordCnt_Dif;
+	private int unknownWordCnt;
 	private int knownWordCnt;
 	private double unknownAccuracy;
 	private TagTrainingResult trainingResult;
 	
 	public TagTestEvaluate() {
-		differenceMap = new TreeMap<String, TPair>();
+		//differenceMap = new TreeMap<String, TPair>();
+		differenceMap = new PairDataMap();
 		trainingResult = null;
 	}
 
-	public Map<String, TPair> evaluate(String targetFileName, String refFileName) {
+	public PairDataMap evaluate(String targetFileName, String refFileName) {
 		TextFile targetFile = new TextFile(targetFileName);
 		TextFile refFile = new TextFile(refFileName);
 		List<String> target = targetFile.readLines();
@@ -47,8 +52,6 @@ public class TagTestEvaluate {
 	 * compare to all word/tag from test which are known in traing result 
 	 */
 	private double calculateUnknownAccuracy(TagTraining refResult) {
-		int unknownWordCnt_Dif = differenceMap.size() - knownWordCnt_Dif;
-		int unknownWordCnt = refResult.wordMap.entrySet().size() - knownWordCnt;
 		double prob = (double)unknownWordCnt_Dif / (double)unknownWordCnt;
 		return 1-prob;
 	}
@@ -58,23 +61,42 @@ public class TagTestEvaluate {
 	 * compare to all word/tag from test which are known in traing result 
 	 */
 	private double calculateKnownAccuracy(TagTraining refResult) {
-		Set<Entry<String, TPair>> entries = differenceMap.entrySet();
+		//Set<Entry<String, TPair>> entries = differenceMap.entrySet();
+		Set<Entry<String, BasicStatisticData>> entries = differenceMap.entrySet();
 		knownWordCnt_Dif = 0;
-		for (Entry<String, TPair> en: entries) {
+		unknownWordCnt_Dif = 0;
+		for (Entry<String, BasicStatisticData> en: entries) {
 			String word = en.getKey();
+			word = word.substring(0, word.indexOf(' '));
+			BasicStatisticData sd = en.getValue();
 			if (trainingResult.wordMap.containsKey(word)) {
-				knownWordCnt_Dif++;
+				knownWordCnt_Dif += sd.getCount();
+			}
+			else {
+				unknownWordCnt_Dif += sd.getCount();
 			}
 		}
+		
 		knownWordCnt = 0;
-		Set<Entry<String, WordTagStatisticData>> testEntries = refResult.wordMap.entrySet();
-		for (Entry<String, WordTagStatisticData> en: testEntries) {
+		unknownWordCnt = 0;
+		Set<Entry<String, BasicStatisticData>> testEntries = refResult.wordTagPairMap.entrySet();
+		for (Entry<String, BasicStatisticData> en: testEntries) {
 			String word = en.getKey();
+			word = word.substring(0, word.indexOf(' '));
+			BasicStatisticData sd = en.getValue();
 			if (trainingResult.wordMap.containsKey(word)) {
-				knownWordCnt++;
+				knownWordCnt += sd.getCount();
+			}
+			else {
+				unknownWordCnt += sd.getCount();
 			}
 		}
 		double prob = (double)knownWordCnt_Dif / (double)knownWordCnt;
+		//test
+		System.out.println("known :" + knownWordCnt);
+		System.out.println("known diff:" + knownWordCnt_Dif);
+		System.out.println("unknown :" + unknownWordCnt);
+		System.out.println("unknown diff:" + unknownWordCnt_Dif);
 		
 		return 1.0-prob;
 	}
@@ -82,14 +104,17 @@ public class TagTestEvaluate {
 	//different word/tag compare to total word/tag
 	private double calculateTotalAccuracy(TagTraining refResult) {
 		double acr = 0.0;
-		int wordTagPairCnt = refResult.wordTagPairMap.entrySet().size();
-		int diffCnt = differenceMap.size();
+		int wordTagPairCnt = refResult.wordTagPairMap.getCount();
+		int diffCnt = differenceMap.getCount();
+		//test
+		System.out.println("total:" + wordTagPairCnt);
+		System.out.println("total dif:" + diffCnt);
 		acr = 1 - (double)diffCnt/(double)wordTagPairCnt;
 		return acr;
 	}
 
 	public void compare(List<String> target, List<String> ref) {
-		differenceMap.clear();
+		differenceMap.getMap().clear();
 		for (int i = 0; i < target.size(); i++) {
 			compareSentence(target.get(i), ref.get(i));
 		}
@@ -153,6 +178,9 @@ public class TagTestEvaluate {
 		int sI = subTgt.indexOf(' ');
 		if (sI > -1) {
 		String pairTgt = subTgt.substring(0, sI);
+		if (pairTgt.indexOf("/unknown")>0) {
+			pairTgt = pairTgt.substring(0, pairTgt.indexOf("/unknown"));
+		}
 		sI = subRef.indexOf(' ');
 		String pairRef = subRef.substring(0, sI);
 		pr = new TPair(pairTgt, pairRef);
@@ -170,7 +198,14 @@ public class TagTestEvaluate {
 		TPair ref = new TPair(pairRef, DummyItems.TAG_SEPERATOR);
 		if (tgt.getS1().equalsIgnoreCase(ref.getS1())) {			
 			TPair tagPair = new TPair(tgt.getS2(), ref.getS2());
-			differenceMap.put(tgt.getS1(), tagPair);
+			tagPair.setSeparator('/');
+			String key = tgt.getS1() + ' ' + tagPair.getPair();
+			if (differenceMap.containsKey(key)) {
+				differenceMap.increaseCount(key);
+			}
+			else {
+				differenceMap.createKey(key);
+			}
 		}
 	}
 
@@ -178,7 +213,7 @@ public class TagTestEvaluate {
 		return totalAccuracy;
 	}
 
-	public Map<String, TPair> getDifferenceMap() {
+	public PairDataMap getDifferenceMap() {
 		return differenceMap;
 	}
 
@@ -197,7 +232,7 @@ public class TagTestEvaluate {
 	public void outputAccuracy() {
 		System.out.println("total: " + getTotalAccuracy());
 		System.out.println("known: " + getKnownAccuracy());
-		System.out.println("unkonwn: " + getUnknownAccuracy());
+		System.out.println("unknown: " + getUnknownAccuracy());
 	}
 
 
