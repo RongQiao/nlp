@@ -179,4 +179,15 @@ public class TagTraining extends TagTrainingResult{
 		System.out.println("tag/tag count: " + cnt + "," + tagTagPairMap.getCount());
 	}
 
+	public void outputModel(String modelFile) {
+		String subName = modelFile;
+		if (modelFile.indexOf(".") > 0) {
+			subName = modelFile.substring(0, modelFile.indexOf("."));
+		}
+		outputTrainResultTag(subName + "_tag.txt");
+		outputTrainResultWord(subName + "_word.txt");
+		outputWordTagData(subName + "_word_tag.txt");
+		outputTagTagData(subName + "_tag_tag.txt");
+	}
+
 }

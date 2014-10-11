@@ -30,10 +30,10 @@ public class TagTest {
 		tags = null;
 	}
 
-	public void test(TagTrainingResult ttr, String fileName) {
+	public void test(TagTrainingResult ttr, String testFileName, String tagedFileName) {
 		trainResult = ttr;
-		TextFile testFile = new TextFile(fileName);
-		giveTagForFile(testFile);
+		TextFile testFile = new TextFile(testFileName);
+		giveTagForFile(testFile, tagedFileName);
 	}
 	
 	private double[][] buildTransitionTable() {
@@ -83,8 +83,8 @@ public class TagTest {
 		return transitionTable;
 	}
 	
-	private void giveTagForFile(TextFile testFile) {
-		TextFile tagedFile = new TextFile("taged.txt");
+	private void giveTagForFile(TextFile testFile, String tagedFileName) {
+		TextFile tagedFile = new TextFile(tagedFileName);
 		tagedFile.clear();
 		List<String> sentences = testFile.readLines();
 		for (String st: sentences) {

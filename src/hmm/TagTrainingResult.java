@@ -121,10 +121,18 @@ public class TagTrainingResult extends TagData{
 	}
 
 	public void learnAllTrainingResult() {
-		learnTrainResultWord("hw3_word.txt");
-		learnTrainResultTag("hw3_tag.txt");
-		learnTrainResultTransition("hw3_tag_tag.txt");
-		learnTrainResultObservation("hw3_word_tag.txt");
+		learnAllTrainingResult("hw3_model.txt");
+	}
+	
+	public void learnAllTrainingResult(String modelFile) {
+		String subName = modelFile;
+		if (modelFile.indexOf(".") > 0) {
+			subName = modelFile.substring(0, modelFile.indexOf("."));
+		}
+		learnTrainResultWord(subName + "_word.txt");
+		learnTrainResultTag(subName + "_tag.txt");
+		learnTrainResultTransition(subName + "_tag_tag.txt");
+		learnTrainResultObservation(subName + "_word_tag.txt");
 	}
 
 	public int getTagCount() {
@@ -137,6 +145,7 @@ public class TagTrainingResult extends TagData{
 		return tagTagPairMap.getProbability(key);
 
 	}
+
 
 
 
