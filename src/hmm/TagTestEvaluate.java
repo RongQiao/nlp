@@ -6,13 +6,14 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
+import basic.BasicDataMap;
 import basic.BasicStatisticData;
 import basic.TPair;
 import basicFiles.TextFile;
 
 public class TagTestEvaluate {
 	//private Map<String, TPair> differenceMap;	//for same word, different tag
-	private PairDataMap differenceMap;
+	private BasicDataMap differenceMap;
 	private double totalAccuracy;
 	private double knownAccuracy;
 	private int knownWordCnt_Dif;
@@ -24,11 +25,11 @@ public class TagTestEvaluate {
 	
 	public TagTestEvaluate() {
 		//differenceMap = new TreeMap<String, TPair>();
-		differenceMap = new PairDataMap();
+		differenceMap = new BasicDataMap();
 		trainingResult = null;
 	}
 
-	public PairDataMap evaluate(String targetFileName, String refFileName) {
+	public BasicDataMap evaluate(String targetFileName, String refFileName) {
 		TextFile targetFile = new TextFile(targetFileName);
 		TextFile refFile = new TextFile(refFileName);
 		List<String> target = targetFile.readLines();
@@ -213,7 +214,7 @@ public class TagTestEvaluate {
 		return totalAccuracy;
 	}
 
-	public PairDataMap getDifferenceMap() {
+	public BasicDataMap getDifferenceMap() {
 		return differenceMap;
 	}
 

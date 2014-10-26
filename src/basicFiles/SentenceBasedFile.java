@@ -31,13 +31,13 @@ public class SentenceBasedFile extends TextFile{
 		this.stParser = stParser;
 	}
 	
-	public List<String> readWords() {
-		List<String> buf = new ArrayList<String>();
-		List<String> lines = readLines();
-		if (lines != null) {
-			
-		}
-		return buf;
-	}
+//	public List<String> readWords() {
+//		List<String> buf = new ArrayList<String>();
+//		List<String> lines = readLines();
+//		if (lines != null) {
+//			
+//		}
+//		return buf;
+//	}
 
 }

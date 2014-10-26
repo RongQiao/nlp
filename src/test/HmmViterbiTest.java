@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import hmm.PairDataMap;
 import hmm.TagTest;
 import hmm.TagTestEvaluate;
 import hmm.TagTrainFile;
@@ -16,6 +15,7 @@ import hmm.TagTrainingResult;
 
 import org.junit.Test;
 
+import basic.BasicDataMap;
 import basic.BasicStatisticData;
 import basic.TPair;
 import basicFiles.TextFile;
@@ -28,12 +28,12 @@ public class HmmViterbiTest {
 		TagTrainingResult ttr = new TagTrainingResult();
 		ttr.learnAllTrainingResult();
 		TagTest tt = new TagTest();
-		tt.test(ttr, testFile, "taged.txt");
-		TextFile testResult = new TextFile("taged.txt");
+		tt.test(ttr, testFile, "testfiles/taged.txt");
+		TextFile testResult = new TextFile("testfiles/taged.txt");
 		assertTrue(testResult.exists());
 		TagTestEvaluate tte = new TagTestEvaluate();
 		tte.setTrainingResult(ttr);
-		tte.evaluate("taged.txt", "taged_ref.txt");
+		tte.evaluate("testfiles/taged.txt", "testfiles/taged_ref.txt");
 		tte.outputAccuracy();
 //		if (dif.size() > 0) {
 //			Set<Entry<String, TPair>> entries = dif.entrySet();
@@ -51,12 +51,12 @@ public class HmmViterbiTest {
 		TagTrainingResult ttr = new TagTrainingResult();
 		ttr.learnAllTrainingResult();
 		TagTest tt = new TagTest();
-		tt.test(ttr, testFile, "taged.txt");
-		TextFile testResult = new TextFile("taged.txt");
+		tt.test(ttr, testFile, "testfiles/taged.txt");
+		TextFile testResult = new TextFile("testfiles/taged.txt");
 		assertTrue(testResult.exists());
 		TagTestEvaluate tte = new TagTestEvaluate();
 		tte.setTrainingResult(ttr);
-		tte.evaluate("taged.txt", "hw3_test_ref_00.txt");
+		tte.evaluate("testfiles/taged.txt", "hw3_test_ref_00.txt");
 		tte.outputAccuracy();
 //		if (dif.size() > 0) {
 //			
@@ -75,7 +75,7 @@ public class HmmViterbiTest {
 		ttr.learnAllTrainingResult();
 		TagTestEvaluate tte = new TagTestEvaluate();
 		tte.setTrainingResult(ttr);
-		PairDataMap dif = tte.evaluate("hw3_taged.txt", "hw3_test_ref_00.txt");
+		BasicDataMap dif = tte.evaluate("hw3_testfiles/taged.txt", "hw3_test_ref_00.txt");
 		tte.outputAccuracy();
 //		if (dif.getCount() > 0) {
 //			
@@ -101,7 +101,7 @@ public class HmmViterbiTest {
 //		ttr.learnAllTrainingResult();
 //		TagTestEvaluate tte = new TagTestEvaluate();
 //		tte.setTrainingResult(ttr);
-//		TextFile t = new TextFile("taged.txt");
+//		TextFile t = new TextFile("testfiles/taged.txt");
 //		TextFile r = new TextFile("hw3_test_ref_00.txt");		
 //		List<String> ts = t.readLines();
 //		List<String> rs = r.readLines();

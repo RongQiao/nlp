@@ -11,14 +11,14 @@ public class bigram_test {
 			System.out.println("error: files not given.");
 		}
 		else {
-			TrainingResultData trd = new TrainingResultData();
+			NgramTrainingResult trd = new NgramTrainingResult();
 			trd.learnFromResultFile(args[3]);
 			
 			String fileNameTest = args[1];
 			DataFile df = new DataFile(fileNameTest);
 			List<String> words = df.getWords();
 			List<String> pairs = df.getPairs();
-			TestData td = new TestData(pairs, words.size());
+			NgramTest td = new NgramTest(pairs, words.size());
 			double ppl = td.test(trd);
 			System.out.println(ppl);
 		}

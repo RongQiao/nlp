@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import basic.BasicStatisticData;
 import basic.ResultParser;
 import basic.TPair;
+import basic.UnitDataMap;
 import basicFiles.TextFile;
 
 public class TagTraining extends TagTrainingResult{
@@ -21,10 +22,10 @@ public class TagTraining extends TagTrainingResult{
 
 	public void train() {
 		trainWithoutOutput();
-		outputTrainResultTag("hw3_tag.txt");
-		outputTrainResultWord("hw3_word.txt");
-		outputWordTagData("hw3_word_tag.txt");
-		outputTagTagData("hw3_tag_tag.txt");
+		outputTrainResultTag("testfiles/hw3_tag.txt");
+		outputTrainResultWord("testfiles/hw3_word.txt");
+		outputWordTagData("testfiles/hw3_word_tag.txt");
+		outputTagTagData("testfiles/hw3_tag_tag.txt");
 		//test
 		outputResultNum();
 	}

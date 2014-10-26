@@ -9,8 +9,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import NgramLM.StatisticData;
+import basic.BasicDataMap;
 import basic.BasicStatisticData;
 import basic.ResultParser;
+import basic.UnitDataMap;
 import basicFiles.TextFile;
 
 public class TagTrainingResult extends TagData{
@@ -47,7 +49,7 @@ public class TagTrainingResult extends TagData{
 		learnPairProbResult(fileName, wordTagPairMap);
 	}
 	
-	private void learnPairProbResult(String fileName, PairDataMap map) {
+	private void learnPairProbResult(String fileName, BasicDataMap map) {
 		TextFile tf = new TextFile(fileName);
 		List<String> lines = tf.readLines();
 		for (String line: lines) {

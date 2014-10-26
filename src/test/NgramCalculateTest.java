@@ -12,13 +12,13 @@ import basicFiles.DataFile;
 import basicFiles.TextFile;
 import NgramLM.DataMap;
 import NgramLM.StatisticData;
-import NgramLM.TrainingData;
+import NgramLM.NgramTraining;
 
 public class NgramCalculateTest {
 
 	@Test
 	public void getTrainWords1() {
-		String fileName = "testOneSentence.txt";
+		String fileName = "testfiles/testOneSentence.txt";
 		DataFile df = new DataFile(fileName);
 		List<String> words = df.getWords();
 		int cnt = words.size();
@@ -37,7 +37,7 @@ public class NgramCalculateTest {
 			}
 		}
 
-		TrainingData td = new TrainingData();
+		NgramTraining td = new NgramTraining();
 		td.mapSingleWords(words);
 		DataMap mp = td.getUniMap();
 		for (int k = 0; k < s.length; k++) {			
@@ -56,14 +56,14 @@ public class NgramCalculateTest {
 			}
 		}
 		
-		TrainingData td = new TrainingData(words, null);
+		NgramTraining td = new NgramTraining(words, null);
 		td.mapWords();
 		td.calculateUnigramProb();
 		double p = td.getUnigProbability("dog");
 		double r = (double)10/(double)23;
 		assertTrue(Double.compare(p, r) == 0);
 		td.outputLanguageModel();
-		TextFile lmUnigram = new TextFile("LM.txt");
+		TextFile lmUnigram = new TextFile("testfiles/LM.txt");
 		assertTrue(lmUnigram.exists());
 	}
 	
@@ -78,7 +78,7 @@ public class NgramCalculateTest {
 //			}
 //		}
 //		
-//		TrainingData td = new TrainingData(words, null);
+//		NgramTraining td = new NgramTraining(words, null);
 //		td.mapWords();
 //		double Pgt = td.calculatePgt();
 //		double r = (double)1/(double)3 * (double)2 / (double)23;
@@ -96,7 +96,7 @@ public class NgramCalculateTest {
 	 */
 	@Test
 	public void calculatePair() {
-		String fileName = "pair.txt";
+		String fileName = "testfiles/pair.txt";
 		DataFile df = new DataFile(fileName);
 		List<String> pairs = df.getPairs();
 		int cnt = pairs.size();
@@ -105,11 +105,11 @@ public class NgramCalculateTest {
 	
 	@Test 
 	public void biogramP() {
-		String fileName = "pair.txt";
+		String fileName = "testfiles/pair.txt";
 		DataFile df = new DataFile(fileName);
 		List<String> words = df.getWords();
 		List<String> pairs = df.getPairs();
-		TrainingData td = new TrainingData(words, pairs);
+		NgramTraining td = new NgramTraining(words, pairs);
 		td.mapWords();
 		td.calculatePairCount();
 		td.calculateBigramProb();
@@ -120,11 +120,11 @@ public class NgramCalculateTest {
 	
 	@Test
 	public void backOffWeight() {
-		String fileName = "pair.txt";
+		String fileName = "testfiles/pair.txt";
 		DataFile df = new DataFile(fileName);
 		List<String> words = df.getWords();
 		List<String> pairs = df.getPairs();
-		TrainingData td = new TrainingData(words, pairs);
+		NgramTraining td = new NgramTraining(words, pairs);
 		td.mapWords();
 		td.calculateUnigramProb();
 		td.calculatePairCount();
@@ -146,19 +146,19 @@ public class NgramCalculateTest {
 	
 	@Test
 	public void unigramTraining() {
-		String fileName = "hw2_train.txt";
+		String fileName = "testfiles/hw2_train.txt";
 		DataFile df = new DataFile(fileName);
 		List<String> words = df.getWords();
 		List<String> pairs = df.getPairs();
-		TrainingData td = new TrainingData(words, pairs);
+		NgramTraining td = new NgramTraining(words, pairs);
 		td.training();
-		TextFile lmUnigram = new TextFile("LM.txt");
+		TextFile lmUnigram = new TextFile("testfiles/LM.txt");
 		assertTrue(lmUnigram.exists());
 	}
 	
 	@Test
 	public void getTrainWords2() {
-		String fileName = "hw2_train.txt";
+		String fileName = "testfiles/hw2_train.txt";
 		DataFile df = new DataFile(fileName);
 		List<String> words = df.getWords();
 		int cnt = words.size();
@@ -168,7 +168,7 @@ public class NgramCalculateTest {
 	
 	@Test
 	public void getTrainPairs() {
-		String fileName = "hw2_train.txt";
+		String fileName = "testfiles/hw2_train.txt";
 		DataFile df = new DataFile(fileName);
 		List<String> pairs = df.getPairs();
 		int cnt = pairs.size();

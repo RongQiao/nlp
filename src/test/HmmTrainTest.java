@@ -12,7 +12,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import NgramLM.TrainingResultData;
+import NgramLM.NgramTrainingResult;
 import basic.TPair;
 import basicFiles.AbstractDataFile;
 import basicFiles.DataFile;
@@ -24,7 +24,7 @@ public class HmmTrainTest {
 
 	@Test
 	public void getPairs1() {
-		String fileName = "testOneSentenceTag.txt";		
+		String fileName = "testfiles/testOneSentenceTag.txt";		
 		TagTrainFile tdf = new TagTrainFile(fileName);
 		List<TPair> pairs = new ArrayList<TPair>(); 
 		tdf.getWordTagPairs(pairs);
@@ -37,7 +37,7 @@ public class HmmTrainTest {
 	
 	@Test
 	public void getPairs2() {
-		String fileName = "testOneSentenceTag.txt";		
+		String fileName = "testfiles/testOneSentenceTag.txt";		
 		TagTrainFile tdf = new TagTrainFile(fileName);
 		List<TPair> pairs = new ArrayList<TPair>(); 
 		tdf.getTagPairs(pairs);
@@ -54,42 +54,42 @@ public class HmmTrainTest {
 
 	@Test
 	public void getTrainInfo() {
-		String fileName = "testOneSentenceTag.txt";		
+		String fileName = "testfiles/testOneSentenceTag.txt";		
 		TagTrainFile tdf = new TagTrainFile(fileName);
 		TagTraining tt = new TagTraining(tdf);
 		tt.train();
-		TextFile word = new TextFile("hw3_word.txt");
+		TextFile word = new TextFile("testfiles/hw3_word.txt");
 		assertTrue(word.exists());
-		TextFile wordTag = new TextFile("hw3_word_tag.txt");
+		TextFile wordTag = new TextFile("testfiles/hw3_word_tag.txt");
 		assertTrue(wordTag.exists()); 
-		TextFile tagTag = new TextFile("hw3_tag_tag.txt");
+		TextFile tagTag = new TextFile("testfiles/hw3_tag_tag.txt");
 		assertTrue(tagTag.exists()); 
 	}
 	
 	@Test
 	public void getTrainResult() {
-		String fileName = "testOneSentenceTag.txt";		
+		String fileName = "testfiles/testOneSentenceTag.txt";		
 		TagTrainFile tdf = new TagTrainFile(fileName);
 		TagTraining tt = new TagTraining(tdf);
 		tt.train();
 		TagTrainingResult ttr = new TagTrainingResult();
-		ttr.learnTrainResultTag("hw3_tag.txt");
-		ttr.learnTrainResultWord("hw3_word.txt");
-		ttr.learnTrainResultTransition("hw3_tag_tag.txt");
-		ttr.learnTrainResultObservation("hw3_word_tag.txt");
+		ttr.learnTrainResultTag("testfiles/hw3_tag.txt");
+		ttr.learnTrainResultWord("testfiles/hw3_word.txt");
+		ttr.learnTrainResultTransition("testfiles/hw3_tag_tag.txt");
+		ttr.learnTrainResultObservation("testfiles/hw3_word_tag.txt");
 	}
 	
 	@Test
 	public void getTrainInfo1() {
-		String fileName = "hw3_train.txt";		
+		String fileName = "testfiles/hw3_train.txt";		
 		TagTrainFile tdf = new TagTrainFile(fileName);
 		TagTraining tt = new TagTraining(tdf);
 		tt.train();
-		TextFile word = new TextFile("hw3_word.txt");
+		TextFile word = new TextFile("testfiles/hw3_word.txt");
 		assertTrue(word.exists());
-		TextFile wordTag = new TextFile("hw3_word_tag.txt");
+		TextFile wordTag = new TextFile("testfiles/hw3_word_tag.txt");
 		assertTrue(wordTag.exists()); 
-		TextFile tagTag = new TextFile("hw3_tag_tag.txt");
+		TextFile tagTag = new TextFile("testfiles/hw3_tag_tag.txt");
 		assertTrue(tagTag.exists()); 
 	}
 }

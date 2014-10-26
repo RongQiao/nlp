@@ -3,7 +3,7 @@ package hmm;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import NgramLM.TrainingResultData;
+import NgramLM.NgramTrainingResult;
 
 public class TagStrategy4UnseenWord {
 	TagTrainingResult trainResult;

@@ -7,16 +7,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import NgramLM.RegularSentenceParser;
+import basic.BasicDataMap;
 import basic.BasicStatisticData;
 import basic.ResultParser;
 import basic.TPair;
+import basicFiles.RegularSentenceParser;
 import basicFiles.TextFile;
 
 public class TagTest {
 	private TagTrainingResult trainResult;
 	private RegularSentenceParser stParser;
-	private PairDataMap unseenWordTagMap;
+	private BasicDataMap unseenWordTagMap;
 	
 	//save data
 	List<String> tags;
@@ -26,7 +27,7 @@ public class TagTest {
 	
 	public TagTest() {
 		stParser = new RegularSentenceParser();
-		unseenWordTagMap = new PairDataMap();
+		unseenWordTagMap = new BasicDataMap();
 		tags = null;
 	}
 
@@ -162,10 +163,6 @@ public class TagTest {
 					double bjt = getBsOt(tag, word);
 					double new_score = v * aij * bjt;
 					if (new_score > viterbi[sj][t]) {
-						//test
-//						if (word.equalsIgnoreCase("1,111")) {
-//							System.out.println(tag + "," + new_score + "," + viterbi[sj][t]);
-//						}
 						viterbi[sj][t] = new_score;
 						back_track[sj][t] = si;	//for getting the path
 

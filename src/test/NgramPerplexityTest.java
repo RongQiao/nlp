@@ -7,9 +7,9 @@ import java.util.List;
 import org.junit.Test;
 
 import basicFiles.DataFile;
-import NgramLM.TestData;
-import NgramLM.TrainingData;
-import NgramLM.TrainingResultData;
+import NgramLM.NgramTest;
+import NgramLM.NgramTraining;
+import NgramLM.NgramTrainingResult;
 
 public class NgramPerplexityTest {
 
@@ -33,27 +33,27 @@ public class NgramPerplexityTest {
 		//assertTrue(cnt == 37);
 	}
 	
-	private TrainingData getTrainingData() {
+	private NgramTraining getNgramTraining() {
 		String fileName = "hw2_train.txt";
 		DataFile df = new DataFile(fileName);
 		List<String> words = df.getWords();
 		List<String> pairs = df.getPairs();
-		TrainingData trd = new TrainingData(words, pairs);
+		NgramTraining trd = new NgramTraining(words, pairs);
 		trd.training();
 		return trd;
 	}
 	
 	@Test
 	public void testProbability() {
-		//TrainingData trd = getTrainingData();
-		TrainingResultData trd = new TrainingResultData();
+		//NgramTraining trd = getNgramTraining();
+		NgramTrainingResult trd = new NgramTrainingResult();
 		trd.learnFromResultFile("LM.txt");
 		
 		String fileNameTest = "hw2_test.txt";
 		DataFile df = new DataFile(fileNameTest);
 		List<String> words = df.getWords();
 		List<String> pairs = df.getPairs();
-		TestData td = new TestData(pairs, words.size());
+		NgramTest td = new NgramTest(pairs, words.size());
 		double ppl = td.test(trd);
 		System.out.println(ppl);
 	}
