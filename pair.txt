@@ -1,6 +1,0 @@
-w1 w2 w1 w2 w1 w2
-w1 w7 w1 w7 w1 w7 w1 w7 w1 w7
-w1 w111 w1 w111 w1 w111 w1 w111
-w1 w200
-w1 w300
-w1 w489 w1 w489 w1 w489 w1 w489 w1 w489 w1 w489
